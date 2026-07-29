@@ -1,0 +1,325 @@
+<section class="auth-page">
+  <div class="auth-container">
+
+    <!-- Sol tanıtım alanı -->
+    <div class="auth-visual">
+
+      <a
+        routerLink="/"
+        class="auth-brand"
+      >
+        <span class="brand-mark">E</span>
+        <span>Etkinlik Yönetimi</span>
+      </a>
+
+      <div class="visual-content">
+
+        <span class="visual-label">
+          ETKİNLİKLERİ KEŞFETMEYE BAŞLA
+        </span>
+
+        <h2>
+          Yeni deneyimlere bir adım daha yaklaş.
+        </h2>
+
+        <p>
+          Ücretsiz hesabını oluştur, sana uygun etkinlikleri keşfet
+          ve katılım kayıtlarını tek bir yerden yönet.
+        </p>
+
+        <div class="visual-benefits">
+
+          <div class="benefit-item">
+            <span class="benefit-icon">✨</span>
+
+            <div>
+              <strong>Yeni etkinlikler keşfet</strong>
+              <small>İlgi alanına uygun etkinlikleri incele.</small>
+            </div>
+          </div>
+
+          <div class="benefit-item">
+            <span class="benefit-icon">🎟️</span>
+
+            <div>
+              <strong>Kolayca katılım sağla</strong>
+              <small>Bilet türünü seçerek yerini ayır.</small>
+            </div>
+          </div>
+
+          <div class="benefit-item">
+            <span class="benefit-icon">📅</span>
+
+            <div>
+              <strong>Kayıtlarını yönet</strong>
+              <small>Katıldığın etkinlikleri profilinden görüntüle.</small>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Sağ kayıt formu -->
+    <div class="auth-form-area">
+
+      <div class="auth-card">
+
+        <div class="auth-header">
+          <span class="auth-label">
+            YENİ HESAP OLUŞTUR
+          </span>
+
+          <h1>Kayıt Ol</h1>
+
+          <p>
+            Etkinlikleri keşfetmek için bilgilerini gir
+            ve ücretsiz hesabını oluştur.
+          </p>
+        </div>
+
+        <form
+          class="auth-form"
+          [formGroup]="registerForm"
+          (ngSubmit)="onSubmit()"
+        >
+
+          <div class="name-fields">
+
+            <div class="form-group">
+              <label for="name">Ad</label>
+
+              <div
+                class="input-wrapper"
+                [class.input-error]="
+                  registerForm.controls.name.touched &&
+                  registerForm.controls.name.invalid
+                "
+              >
+                <span class="input-icon">👤</span>
+
+                <input
+                  id="name"
+                  type="text"
+                  formControlName="name"
+                  placeholder="Adınız"
+                  autocomplete="given-name"
+                >
+              </div>
+
+              @if (
+                registerForm.controls.name.touched &&
+                registerForm.controls.name.hasError('required')
+              ) {
+                <small class="error-message">
+                  Ad alanı zorunludur.
+                </small>
+              }
+
+              @if (
+                registerForm.controls.name.touched &&
+                registerForm.controls.name.hasError('minlength')
+              ) {
+                <small class="error-message">
+                  Ad en az 2 karakter olmalıdır.
+                </small>
+              }
+            </div>
+
+            <div class="form-group">
+              <label for="surname">Soyad</label>
+
+              <div
+                class="input-wrapper"
+                [class.input-error]="
+                  registerForm.controls.surname.touched &&
+                  registerForm.controls.surname.invalid
+                "
+              >
+                <span class="input-icon">👤</span>
+
+                <input
+                  id="surname"
+                  type="text"
+                  formControlName="surname"
+                  placeholder="Soyadınız"
+                  autocomplete="family-name"
+                >
+              </div>
+
+              @if (
+                registerForm.controls.surname.touched &&
+                registerForm.controls.surname.hasError('required')
+              ) {
+                <small class="error-message">
+                  Soyad alanı zorunludur.
+                </small>
+              }
+
+              @if (
+                registerForm.controls.surname.touched &&
+                registerForm.controls.surname.hasError('minlength')
+              ) {
+                <small class="error-message">
+                  Soyad en az 2 karakter olmalıdır.
+                </small>
+              }
+            </div>
+
+          </div>
+
+          <div class="form-group">
+            <label for="email">E-posta</label>
+
+            <div
+              class="input-wrapper"
+              [class.input-error]="
+                registerForm.controls.email.touched &&
+                registerForm.controls.email.invalid
+              "
+            >
+              <span class="input-icon">✉</span>
+
+              <input
+                id="email"
+                type="email"
+                formControlName="email"
+                placeholder="ornek@mail.com"
+                autocomplete="email"
+              >
+            </div>
+
+            @if (
+              registerForm.controls.email.touched &&
+              registerForm.controls.email.hasError('required')
+            ) {
+              <small class="error-message">
+                E-posta alanı zorunludur.
+              </small>
+            }
+
+            @if (
+              registerForm.controls.email.touched &&
+              registerForm.controls.email.hasError('email')
+            ) {
+              <small class="error-message">
+                Geçerli bir e-posta adresi giriniz.
+              </small>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="phone">Telefon numarası</label>
+
+            <div
+              class="input-wrapper"
+              [class.input-error]="
+                registerForm.controls.phone.touched &&
+                registerForm.controls.phone.invalid
+              "
+            >
+              <span class="input-icon">☎</span>
+
+              <input
+                id="phone"
+                type="tel"
+                formControlName="phone"
+                placeholder="05551234567"
+                autocomplete="tel"
+              >
+            </div>
+
+            @if (
+              registerForm.controls.phone.touched &&
+              registerForm.controls.phone.hasError('pattern')
+            ) {
+              <small class="error-message">
+                Telefon numarası 0 ile başlayan 11 rakam olmalıdır.
+              </small>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="password">Şifre</label>
+
+            <div
+              class="input-wrapper"
+              [class.input-error]="
+                registerForm.controls.password.touched &&
+                registerForm.controls.password.invalid
+              "
+            >
+              <span class="input-icon">🔒</span>
+
+              <input
+                id="password"
+                type="password"
+                formControlName="password"
+                placeholder="En az 6 karakter"
+                autocomplete="new-password"
+              >
+            </div>
+
+            @if (
+              registerForm.controls.password.touched &&
+              registerForm.controls.password.hasError('required')
+            ) {
+              <small class="error-message">
+                Şifre alanı zorunludur.
+              </small>
+            }
+
+            @if (
+              registerForm.controls.password.touched &&
+              registerForm.controls.password.hasError('minlength')
+            ) {
+              <small class="error-message">
+                Şifre en az 6 karakter olmalıdır.
+              </small>
+            }
+          </div>
+
+          <button
+            type="submit"
+            class="submit-button"
+            [disabled]="registerForm.invalid || isLoading"
+          >
+            @if (isLoading) {
+              <span class="button-spinner"></span>
+              Kayıt oluşturuluyor...
+            } @else {
+              Kayıt Ol
+              <span class="button-arrow">→</span>
+            }
+          </button>
+
+          @if (registerMessage) {
+            <p class="register-message">
+              {{ registerMessage }}
+            </p>
+          }
+
+        </form>
+
+        <div class="auth-divider">
+          <span></span>
+          <small>veya</small>
+          <span></span>
+        </div>
+
+        <p class="auth-footer">
+          Zaten hesabın var mı?
+
+          <a routerLink="/login">
+            Giriş yap
+          </a>
+        </p>
+
+      </div>
+
+    </div>
+
+  </div>
+</section>

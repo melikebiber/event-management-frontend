@@ -1,0 +1,788 @@
+<!-- HERO -->
+<section class="home-hero">
+  <div class="hero-background">
+    <img
+      src="/images/events/concert.jpg"
+      alt="Etkinlix etkinlikleri"
+      class="hero-background-image"
+    >
+
+    <div class="hero-background-overlay"></div>
+  </div>
+
+  <div class="home-hero-content">
+    <span class="hero-eyebrow">
+      ETKİNLİX
+    </span>
+
+    <h1>
+      Şehrindeki etkinlikleri keşfet,
+      <span>yeni deneyimlere katıl.</span>
+    </h1>
+
+    <p class="hero-description">
+      Konserlerden tiyatrolara, seminerlerden atölyelere kadar
+      sana uygun etkinlikleri keşfet ve kolayca yerini ayır.
+    </p>
+
+    <div class="hero-actions">
+      <a
+        routerLink="/events"
+        class="hero-primary-button"
+      >
+        Etkinlikleri Keşfet
+      </a>
+
+      <!-- Giriş yapılmamışsa -->
+<a
+  *ngIf="!isLoggedIn"
+  routerLink="/register"
+  class="hero-secondary-button"
+>
+  Ücretsiz Kayıt Ol
+</a>
+
+<!-- Normal kullanıcı giriş yaptıysa -->
+<a
+  *ngIf="isLoggedIn && !isAdmin"
+  routerLink="/my-events"
+  class="hero-secondary-button"
+>
+  Etkinliklerime Git
+</a>
+
+<!-- Admin giriş yaptıysa -->
+<a
+  *ngIf="isLoggedIn && isAdmin"
+  routerLink="/admin"
+  class="hero-secondary-button"
+>
+  Admin Paneline Git
+</a>
+    </div>
+
+    <div class="hero-city-area">
+      <span class="hero-city-title">
+        Popüler şehirler
+      </span>
+
+      <div class="hero-city-list">
+        <a
+          routerLink="/events"
+          [queryParams]="{ city: 'Sivas' }"
+          class="hero-city-item"
+        >
+          <span></span>
+          Sivas
+        </a>
+
+        <a
+          routerLink="/events"
+          [queryParams]="{ city: 'Ankara' }"
+          class="hero-city-item"
+        >
+          <span></span>
+          Ankara
+        </a>
+
+        <a
+          routerLink="/events"
+          [queryParams]="{ city: 'İstanbul' }"
+          class="hero-city-item"
+        >
+          <span></span>
+          İstanbul
+        </a>
+
+        <a
+          routerLink="/events"
+          [queryParams]="{ city: 'İzmir' }"
+          class="hero-city-item"
+        >
+          <span></span>
+          İzmir
+        </a>
+
+        <a
+          routerLink="/events"
+          [queryParams]="{ city: 'Konya' }"
+          class="hero-city-item"
+        >
+          <span></span>
+          Konya
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-bottom-info">
+    <div class="hero-info-item">
+      <strong>{{ upcomingEvents.length }}+</strong>
+      <span>Güncel etkinlik</span>
+    </div>
+
+    <div class="hero-info-divider"></div>
+
+    <div class="hero-info-item">
+      <strong>6</strong>
+      <span>Farklı kategori</span>
+    </div>
+
+    <div class="hero-info-divider"></div>
+
+    <div class="hero-info-item">
+      <strong>Kolay</strong>
+      <span>Katılım işlemi</span>
+    </div>
+  </div>
+</section>
+
+<!-- YAKLAŞAN ETKİNLİKLER -->
+<section class="upcoming-section">
+  <div class="section-container">
+
+    <div class="section-header">
+      <div>
+        <span class="section-label">
+          YAKLAŞAN ETKİNLİKLER
+        </span>
+
+        <h2>
+          Kaçırmak istemeyeceğin etkinlikler
+        </h2>
+      </div>
+
+      <a routerLink="/events">
+        Tüm etkinlikleri görüntüle →
+      </a>
+    </div>
+
+    <div
+      class="section-state"
+      *ngIf="isLoading"
+    >
+      Etkinlikler yükleniyor...
+    </div>
+
+    <div
+      class="section-state error"
+      *ngIf="!isLoading && errorMessage"
+    >
+      {{ errorMessage }}
+    </div>
+
+    <div
+      class="section-state"
+      *ngIf="
+        !isLoading &&
+        !errorMessage &&
+        upcomingEvents.length === 0
+      "
+    >
+      Yaklaşan etkinlik bulunamadı.
+    </div>
+
+    <div
+      class="upcoming-grid"
+      *ngIf="
+        !isLoading &&
+        !errorMessage &&
+        upcomingEvents.length > 0
+      "
+    >
+      <a
+        class="upcoming-card"
+        *ngFor="let event of upcomingEvents"
+        [routerLink]="['/events', event.event_id]"
+      >
+        <div class="upcoming-card-image">
+          <img
+            [src]="
+              getEventImage(
+                event.category.category_name,
+                event.title
+              )
+            "
+            [alt]="event.title"
+            loading="lazy"
+          >
+
+          <span class="upcoming-category">
+            {{ event.category.category_name }}
+          </span>
+        </div>
+
+        <div class="upcoming-card-content">
+          <h3>
+            {{ event.title }}
+          </h3>
+
+          <p class="upcoming-date">
+            {{ event.event_date }} · {{ event.start_time }}
+          </p>
+
+          <p class="upcoming-location">
+            📍 {{ event.location.location_name }},
+            {{ event.location.city }}
+          </p>
+
+          <strong class="upcoming-detail">
+            Detayları Gör →
+          </strong>
+        </div>
+      </a>
+    </div>
+
+  </div>
+</section>
+
+<!-- KATEGORİLER -->
+<section class="categories-section">
+  <div class="section-container">
+
+    <div class="section-header categories-header">
+      <div>
+        <span class="section-label">
+          KATEGORİLER
+        </span>
+
+        <h2>
+          İlgi alanına göre keşfet
+        </h2>
+
+        <p class="section-description">
+          Teknoloji, sanat, spor ve daha birçok kategoride
+          sana uygun etkinliği kolayca bul.
+        </p>
+      </div>
+
+      <a routerLink="/events">
+        Tüm etkinlikleri görüntüle →
+      </a>
+    </div>
+
+    <div class="category-grid">
+
+      <!-- TEKNOLOJİ -->
+      <a
+        class="category-card"
+        routerLink="/events"
+        [queryParams]="{ category: 'Teknoloji' }"
+      >
+        <span class="category-number">
+          01
+        </span>
+
+        <span class="category-icon">
+          <svg viewBox="0 0 24 24" fill="none">
+            <rect
+              x="4"
+              y="5"
+              width="16"
+              height="11"
+              rx="2"
+              stroke="currentColor"
+              stroke-width="1.8"
+            />
+
+            <path
+              d="M8 20H16M12 16V20"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+            />
+          </svg>
+        </span>
+
+        <div class="category-card-content">
+          <h3>
+            Teknoloji
+          </h3>
+
+          <p>
+            Yazılım, yapay zekâ ve dijital dünya etkinlikleri.
+          </p>
+        </div>
+
+        <span class="category-link">
+          Etkinlikleri gör
+          <strong>→</strong>
+        </span>
+      </a>
+
+      <!-- EĞİTİM -->
+      <a
+        class="category-card"
+        routerLink="/events"
+        [queryParams]="{ category: 'Eğitim' }"
+      >
+        <span class="category-number">
+          02
+        </span>
+
+        <span class="category-icon">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path
+              d="M3 9L12 4L21 9L12 14L3 9Z"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linejoin="round"
+            />
+
+            <path
+              d="M7 12V16C7 17.7 9.2 19 12 19C14.8 19 17 17.7 17 16V12"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+            />
+          </svg>
+        </span>
+
+        <div class="category-card-content">
+          <h3>
+            Eğitim
+          </h3>
+
+          <p>
+            Seminer, konferans ve gelişim programları.
+          </p>
+        </div>
+
+        <span class="category-link">
+          Etkinlikleri gör
+          <strong>→</strong>
+        </span>
+      </a>
+
+      <!-- KÜLTÜR VE SANAT -->
+      <a
+        class="category-card"
+        routerLink="/events"
+        [queryParams]="{ category: 'Kültür ve Sanat' }"
+      >
+        <span class="category-number">
+          03
+        </span>
+
+        <span class="category-icon">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path
+              d="M4 5C7 3.5 10 3.5 12 5V15C9 13.5 6 13.5 4 15V5Z"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linejoin="round"
+            />
+
+            <path
+              d="M20 5C17 3.5 14 3.5 12 5V15C15 13.5 18 13.5 20 15V5Z"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </span>
+
+        <div class="category-card-content">
+          <h3>
+            Kültür ve Sanat
+          </h3>
+
+          <p>
+            Sergi, tiyatro ve yaratıcı sanat etkinlikleri.
+          </p>
+        </div>
+
+        <span class="category-link">
+          Etkinlikleri gör
+          <strong>→</strong>
+        </span>
+      </a>
+
+      <!-- SPOR -->
+      <a
+        class="category-card"
+        routerLink="/events"
+        [queryParams]="{ category: 'Spor' }"
+      >
+        <span class="category-number">
+          04
+        </span>
+
+        <span class="category-icon">
+          <svg viewBox="0 0 24 24" fill="none">
+            <circle
+              cx="12"
+              cy="12"
+              r="8"
+              stroke="currentColor"
+              stroke-width="1.8"
+            />
+
+            <path
+              d="M12 4L15 8L14 12H10L9 8L12 4Z"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </span>
+
+        <div class="category-card-content">
+          <h3>
+            Spor
+          </h3>
+
+          <p>
+            Hareketli, enerjik ve aktif etkinlikler.
+          </p>
+        </div>
+
+        <span class="category-link">
+          Etkinlikleri gör
+          <strong>→</strong>
+        </span>
+      </a>
+
+      <!-- SOSYAL ETKİNLİKLER -->
+      <a
+        class="category-card"
+        routerLink="/events"
+        [queryParams]="{ category: 'Sosyal Etkinlikler' }"
+      >
+        <span class="category-number">
+          05
+        </span>
+
+        <span class="category-icon">
+          <svg viewBox="0 0 24 24" fill="none">
+            <circle
+              cx="9"
+              cy="9"
+              r="3"
+              stroke="currentColor"
+              stroke-width="1.8"
+            />
+
+            <circle
+              cx="16"
+              cy="10"
+              r="2.5"
+              stroke="currentColor"
+              stroke-width="1.8"
+            />
+
+            <path
+              d="M4 19C4 15.7 6.2 14 9 14C11.8 14 14 15.7 14 19"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+            />
+          </svg>
+        </span>
+
+        <div class="category-card-content">
+          <h3>
+            Sosyal Etkinlikler
+          </h3>
+
+          <p>
+            Yeni insanlarla tanışabileceğin buluşmalar.
+          </p>
+        </div>
+
+        <span class="category-link">
+          Etkinlikleri gör
+          <strong>→</strong>
+        </span>
+      </a>
+
+      <!-- SAĞLIK VE YAŞAM -->
+      <a
+        class="category-card"
+        routerLink="/events"
+        [queryParams]="{ category: 'Sağlık ve Yaşam' }"
+      >
+        <span class="category-number">
+          06
+        </span>
+
+        <span class="category-icon">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path
+              d="M12 20C12 20 4 15.6 4 9.5C4 6.5 6 5 8.3 5C10 5 11.2 6 12 7.2C12.8 6 14 5 15.7 5C18 5 20 6.5 20 9.5C20 15.6 12 20 12 20Z"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </span>
+
+        <div class="category-card-content">
+          <h3>
+            Sağlık ve Yaşam
+          </h3>
+
+          <p>
+            İyi yaşam ve kişisel gelişim deneyimleri.
+          </p>
+        </div>
+
+        <span class="category-link">
+          Etkinlikleri gör
+          <strong>→</strong>
+        </span>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<!-- NASIL ÇALIŞIR -->
+<section class="how-it-works-section">
+  <div class="section-container">
+
+    <div class="centered-section-header how-header">
+      <span class="section-label">
+        NASIL ÇALIŞIR?
+      </span>
+
+      <h2>
+        Üç adımda yerini ayır
+      </h2>
+
+      <p>
+        Etkinliği keşfet, ayrıntılarını incele ve
+        katılım kaydını saniyeler içinde oluştur.
+      </p>
+    </div>
+
+    <div class="how-flow">
+
+      <!-- 1. ADIM -->
+      <article class="flow-card">
+        <span class="flow-step-background">
+          01
+        </span>
+
+        <span class="flow-icon">
+          <svg viewBox="0 0 24 24" fill="none">
+            <circle
+              cx="11"
+              cy="11"
+              r="6"
+              stroke="currentColor"
+              stroke-width="1.8"
+            />
+
+            <path
+              d="M16 16L20 20"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+            />
+          </svg>
+        </span>
+
+        <div class="flow-content">
+          <span class="flow-step">
+            1. ADIM
+          </span>
+
+          <h3>
+            Etkinliğini bul
+          </h3>
+
+          <p>
+            Şehir, kategori ve tarih filtreleriyle
+            sana uygun etkinlikleri keşfet.
+          </p>
+
+          <a routerLink="/events">
+            Keşfetmeye başla →
+          </a>
+        </div>
+      </article>
+
+      <span
+        class="flow-connector"
+        aria-hidden="true"
+      >
+        →
+      </span>
+
+      <!-- 2. ADIM -->
+      <article class="flow-card">
+        <span class="flow-step-background">
+          02
+        </span>
+
+        <span class="flow-icon">
+          <svg viewBox="0 0 24 24" fill="none">
+            <rect
+              x="5"
+              y="4"
+              width="14"
+              height="16"
+              rx="2"
+              stroke="currentColor"
+              stroke-width="1.8"
+            />
+
+            <path
+              d="M8 9H16M8 13H16M8 17H13"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+            />
+          </svg>
+        </span>
+
+        <div class="flow-content">
+          <span class="flow-step">
+            2. ADIM
+          </span>
+
+          <h3>
+            Detayları incele
+          </h3>
+
+          <p>
+            Tarih, saat, konum ve kalan kontenjan
+            bilgilerini tek ekranda görüntüle.
+          </p>
+        </div>
+      </article>
+
+      <span
+        class="flow-connector"
+        aria-hidden="true"
+      >
+        →
+      </span>
+
+      <!-- 3. ADIM -->
+      <article class="flow-card">
+        <span class="flow-step-background">
+          03
+        </span>
+
+        <span class="flow-icon">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path
+              d="M4 7H20V17H4V7Z"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linejoin="round"
+            />
+
+            <path
+              d="M9 7V17M15 7V17"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-dasharray="2 2"
+            />
+          </svg>
+        </span>
+
+        <div class="flow-content">
+          <span class="flow-step">
+            3. ADIM
+          </span>
+
+          <h3>
+            Yerini ayır
+          </h3>
+
+          <p>
+            Giriş yaptıktan sonra tek tıkla
+            ücretsiz katılım kaydını oluştur.
+          </p>
+
+          <a
+            *ngIf="!isLoggedIn"
+            routerLink="/register"
+          >
+            Ücretsiz kayıt ol →
+          </a>
+
+          <a
+            *ngIf="isLoggedIn && !isAdmin"
+            routerLink="/my-events"
+          >
+            Etkinliklerime git →
+          </a>
+
+          <a
+            *ngIf="isLoggedIn && isAdmin"
+            routerLink="/admin"
+          >
+            Admin paneline git →
+          </a>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+<!-- KATILIM ÇAĞRISI -->
+<section class="join-section">
+  <div class="section-container">
+
+    <div class="join-card">
+      <div class="join-content">
+        <span class="join-label">
+          ETKİNLİX
+        </span>
+
+        <h2>
+          Yeni deneyimlerde yerini ayır
+        </h2>
+
+        <p>
+          Hesabını oluştur, güncel etkinlikleri keşfet
+          ve katılmak istediğin etkinliklerde kolayca yerini ayır.
+        </p>
+
+        <div class="join-actions">
+          <a
+  *ngIf="!isLoggedIn"
+  routerLink="/register"
+  class="join-primary-button"
+>
+  Ücretsiz Kayıt Ol
+</a>
+
+<a
+  *ngIf="isLoggedIn && !isAdmin"
+  routerLink="/my-events"
+  class="join-primary-button"
+>
+  Etkinliklerime Git
+</a>
+
+<a
+  *ngIf="isLoggedIn && isAdmin"
+  routerLink="/admin"
+  class="join-primary-button"
+>
+  Admin Paneline Git
+</a>
+
+          <a
+            routerLink="/events"
+            class="join-secondary-button"
+          >
+            Etkinlikleri İncele
+          </a>
+        </div>
+      </div>
+
+      <div class="join-decoration">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
+
+  </div>
+</section>

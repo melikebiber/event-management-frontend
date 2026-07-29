@@ -1,0 +1,812 @@
+<section class="event-form-page">
+  <div class="event-form-container">
+
+    <header class="form-page-header">
+      <div>
+        <span class="page-label">
+          YÖNETİM PANELİ
+        </span>
+
+        <h1>
+          {{
+            isEditMode
+              ? 'Etkinliği Düzenle'
+              : 'Yeni Etkinlik Oluştur'
+          }}
+        </h1>
+
+        <p>
+          {{
+            isEditMode
+              ? 'Etkinlik bilgilerini güncelleyebilirsin.'
+              : 'Etkinlik bilgilerini doldurarak sisteme yeni bir etkinlik ekleyebilirsin.'
+          }}
+        </p>
+      </div>
+
+      <a
+        routerLink="/admin"
+        class="back-link"
+      >
+        ← Admin paneline dön
+      </a>
+    </header>
+
+    <div
+      class="state-message"
+      *ngIf="isLoadingOptions"
+    >
+      Kategori ve konum bilgileri yükleniyor...
+    </div>
+
+    <div
+      class="message-box error-message"
+      *ngIf="errorMessage"
+    >
+      {{ errorMessage }}
+    </div>
+
+    <div
+      class="message-box success-message"
+      *ngIf="successMessage"
+    >
+      {{ successMessage }}
+    </div>
+
+    <form
+      class="event-form"
+      [formGroup]="eventForm"
+      (ngSubmit)="onSubmit()"
+      *ngIf="!isLoadingOptions"
+    >
+
+      <!-- 01 TEMEL BİLGİLER -->
+      <section class="form-section">
+
+        <div class="section-heading">
+          <span class="section-number">01</span>
+
+          <div>
+            <h2>Temel bilgiler</h2>
+
+            <p>
+              Etkinliğin başlığını ve açıklamasını gir.
+            </p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+
+          <div class="form-group full-width">
+            <label for="title">
+              Etkinlik başlığı
+            </label>
+
+            <input
+              id="title"
+              type="text"
+              formControlName="title"
+              placeholder="Örnek: Yazılım Geliştirme Konferansı"
+            >
+
+            <small
+              class="field-error"
+              *ngIf="
+                eventForm.controls.title.touched &&
+                eventForm.controls.title.invalid
+              "
+            >
+              Başlık en az 3 karakter olmalıdır.
+            </small>
+          </div>
+
+          <div class="form-group full-width">
+            <label for="description">
+              Açıklama
+            </label>
+
+            <textarea
+              id="description"
+              rows="5"
+              formControlName="description"
+              placeholder="Etkinlik hakkında ayrıntılı bilgi yaz..."
+            ></textarea>
+
+            <small
+              class="field-error"
+              *ngIf="
+                eventForm.controls.description.touched &&
+                eventForm.controls.description.invalid
+              "
+            >
+              Açıklama en az 10 karakter olmalıdır.
+            </small>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- 02 TARİH VE SAAT -->
+      <section class="form-section">
+
+        <div class="section-heading">
+          <span class="section-number">02</span>
+
+          <div>
+            <h2>Tarih ve saat</h2>
+
+            <p>
+              Etkinliğin gerçekleşeceği zamanı belirle.
+            </p>
+          </div>
+        </div>
+
+        <div class="form-grid three-columns">
+
+          <div class="form-group">
+            <label for="event-date">
+              Etkinlik tarihi
+            </label>
+
+            <input
+              id="event-date"
+              type="date"
+              formControlName="event_date"
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="start-time">
+              Başlangıç saati
+            </label>
+
+            <input
+              id="start-time"
+              type="time"
+              formControlName="start_time"
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="end-time">
+              Bitiş saati
+            </label>
+
+            <input
+              id="end-time"
+              type="time"
+              formControlName="end_time"
+            >
+          </div>
+
+        </div>
+      </section>
+
+      <!-- 03 KATEGORİ VE KONUM -->
+      <section class="form-section">
+
+        <div class="section-heading">
+          <span class="section-number">03</span>
+
+          <div>
+            <h2>Kategori ve konum</h2>
+
+            <p>
+              Etkinliğin kategorisini ve gerçekleşeceği yeri seç.
+            </p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+
+          <div class="form-group">
+            <label for="category">
+              Kategori
+            </label>
+
+            <select
+              id="category"
+              formControlName="category_id"
+            >
+              <option [ngValue]="null">
+                Kategori seç
+              </option>
+
+              <option
+                *ngFor="let category of categories"
+                [ngValue]="category.category_id"
+              >
+                {{ category.category_name }}
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group">
+
+            <div class="field-heading">
+              <label for="location">
+                Konum
+              </label>
+
+              <button
+                type="button"
+                class="add-location-button"
+                (click)="toggleLocationForm()"
+              >
+                {{
+                  showLocationForm
+                    ? 'Yeni konum formunu kapat'
+                    : '+ Yeni Konum Ekle'
+                }}
+              </button>
+            </div>
+
+            <select
+              id="location"
+              formControlName="location_id"
+            >
+              <option [ngValue]="null">
+                Konum seç
+              </option>
+
+              <option
+                *ngFor="let location of locations"
+                [ngValue]="location.location_id"
+              >
+                {{ location.location_name }}
+                — {{ location.city }}
+              </option>
+            </select>
+          </div>
+
+          <!-- YENİ KONUM FORMU -->
+          <div
+            class="new-location-panel full-width"
+            *ngIf="showLocationForm"
+            [formGroup]="locationForm"
+          >
+
+            <div class="new-location-header">
+              <div>
+                <h3>Yeni Konum Ekle</h3>
+
+                <p>
+                  Yeni konumu kaydettikten sonra etkinlik için
+                  otomatik olarak seçilir.
+                </p>
+              </div>
+            </div>
+
+            <div
+              class="message-box error-message"
+              *ngIf="locationErrorMessage"
+            >
+              {{ locationErrorMessage }}
+            </div>
+
+            <div class="form-grid">
+
+              <div class="form-group">
+                <label for="location-name">
+                  Konum adı
+                </label>
+
+                <input
+                  id="location-name"
+                  type="text"
+                  formControlName="location_name"
+                  placeholder="Örnek: Atatürk Kültür Merkezi"
+                >
+              </div>
+
+              <div class="form-group">
+                <label for="location-capacity">
+                  Kapasite
+                </label>
+
+                <input
+                  id="location-capacity"
+                  type="number"
+                  min="1"
+                  formControlName="capacity"
+                  placeholder="Örnek: 500"
+                >
+              </div>
+
+              <div class="form-group">
+                <label for="location-city">
+                  Şehir
+                </label>
+
+                <input
+                  id="location-city"
+                  type="text"
+                  formControlName="city"
+                  placeholder="Örnek: İstanbul"
+                >
+              </div>
+
+              <div class="form-group">
+                <label for="location-district">
+                  İlçe
+                </label>
+
+                <input
+                  id="location-district"
+                  type="text"
+                  formControlName="district"
+                  placeholder="Örnek: Beyoğlu"
+                >
+              </div>
+
+              <div class="form-group full-width">
+                <label for="location-address">
+                  Adres
+                </label>
+
+                <textarea
+                  id="location-address"
+                  rows="3"
+                  formControlName="address"
+                  placeholder="Konumun açık adresini yaz..."
+                ></textarea>
+              </div>
+
+            </div>
+
+            <div class="location-form-actions">
+
+              <button
+                type="button"
+                class="cancel-location-button"
+                (click)="toggleLocationForm()"
+                [disabled]="isCreatingLocation"
+              >
+                Vazgeç
+              </button>
+
+              <button
+                type="button"
+                class="save-location-button"
+                (click)="createLocation()"
+                [disabled]="isCreatingLocation"
+              >
+                {{
+                  isCreatingLocation
+                    ? 'Konum ekleniyor...'
+                    : 'Konumu Kaydet'
+                }}
+              </button>
+
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- 04 KATILIM AYARLARI -->
+      <section class="form-section">
+
+        <div class="section-heading">
+          <span class="section-number">04</span>
+
+          <div>
+            <h2>Katılım ayarları</h2>
+
+            <p>
+              Kapasite ve etkinlik durumunu belirle.
+            </p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+
+          <div class="form-group">
+            <label for="capacity">
+              Etkinlik kapasitesi
+            </label>
+
+            <input
+              id="capacity"
+              type="number"
+              min="1"
+              formControlName="capacity"
+              placeholder="Örnek: 300"
+            >
+
+            <small
+              class="field-error"
+              *ngIf="
+                eventForm.controls.capacity.touched &&
+                eventForm.controls.capacity.invalid
+              "
+            >
+              Etkinlik kapasitesi en az 1 olmalıdır.
+            </small>
+          </div>
+
+          <div class="form-group">
+            <label for="status">
+              Etkinlik durumu
+            </label>
+
+            <select
+              id="status"
+              formControlName="status"
+            >
+              <option value="active">
+                Aktif
+              </option>
+
+              <option value="passive">
+                Pasif
+              </option>
+            </select>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- 05 BİLET BİLGİLERİ -->
+      <section
+        class="form-section"
+        *ngIf="!isEditMode"
+        [formGroup]="ticketForm"
+      >
+
+        <div class="section-heading">
+          <span class="section-number">05</span>
+
+          <div>
+            <h2>Bilet bilgileri</h2>
+
+            <p>
+              Etkinliğin başlangıç bilet türünü ve
+              bilet kontenjanını belirle.
+            </p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+
+          <div class="form-group">
+            <label for="ticket-type">
+              Bilet türü
+            </label>
+
+            <input
+              id="ticket-type"
+              type="text"
+              formControlName="ticket_type"
+              placeholder="Örnek: Standart"
+            >
+
+            <small
+              class="field-error"
+              *ngIf="
+                ticketForm.controls.ticket_type.touched &&
+                ticketForm.controls.ticket_type.invalid
+              "
+            >
+              Bilet türü zorunludur.
+            </small>
+          </div>
+
+          <div class="form-group">
+            <label for="ticket-quantity">
+              Bilet kontenjanı
+            </label>
+
+            <input
+              id="ticket-quantity"
+              type="number"
+              min="1"
+              formControlName="ticket_quantity"
+              placeholder="Örnek: 100"
+            >
+
+            <small
+              class="field-error"
+              *ngIf="
+                ticketForm.controls.ticket_quantity.touched &&
+                ticketForm.controls.ticket_quantity.invalid
+              "
+            >
+              Bilet kontenjanı en az 1 olmalıdır.
+            </small>
+          </div>
+
+        </div>
+      </section>
+<!-- 06 MEVCUT BİLETLERİ YÖNET -->
+<section
+  class="form-section"
+  *ngIf="isEditMode"
+>
+  <div class="section-heading">
+    <span class="section-number">05</span>
+
+    <div>
+      <h2>Bilet yönetimi</h2>
+
+      <p>
+        Etkinliğin mevcut biletlerini düzenle
+        veya yeni bir bilet türü ekle.
+      </p>
+    </div>
+  </div>
+
+  <div class="ticket-management-area">
+
+    <div
+      class="message-box error-message"
+      *ngIf="ticketErrorMessage"
+    >
+      {{ ticketErrorMessage }}
+    </div>
+
+    <div
+      class="message-box success-message"
+      *ngIf="ticketSuccessMessage"
+    >
+      {{ ticketSuccessMessage }}
+    </div>
+
+    <div
+      class="state-message"
+      *ngIf="isLoadingTickets"
+    >
+      Bilet bilgileri yükleniyor...
+    </div>
+
+    <div
+      class="ticket-management-header"
+      *ngIf="!isLoadingTickets"
+    >
+      <div>
+        <h3>Mevcut biletler</h3>
+
+        <p>
+          Toplam ve kalan bilet sayılarını görüntüleyebilirsin.
+        </p>
+      </div>
+
+      <button
+        type="button"
+        class="add-ticket-button"
+        (click)="openNewTicketForm()"
+        *ngIf="!showTicketManagementForm"
+      >
+        + Yeni Bilet Türü Ekle
+      </button>
+    </div>
+
+    <div
+      class="ticket-empty-state"
+      *ngIf="
+        !isLoadingTickets &&
+        tickets.length === 0
+      "
+    >
+      Bu etkinliğe ait bilet bulunmuyor.
+    </div>
+
+    <div
+      class="ticket-list"
+      *ngIf="
+        !isLoadingTickets &&
+        tickets.length > 0
+      "
+    >
+      <article
+        class="ticket-item"
+        *ngFor="let ticket of tickets"
+      >
+        <div class="ticket-main-info">
+          <strong>
+            {{ ticket.ticket_type }}
+          </strong>
+
+          <span>
+            Bilet #{{ ticket.ticket_id }}
+          </span>
+        </div>
+
+        <div class="ticket-quantity-info">
+          <div>
+            <small>Toplam</small>
+
+            <strong>
+              {{ ticket.total_quantity }}
+            </strong>
+          </div>
+
+          <div>
+            <small>Kalan</small>
+
+            <strong>
+              {{ ticket.available_quantity }}
+            </strong>
+          </div>
+
+          <div>
+            <small>Kullanılan</small>
+
+            <strong>
+              {{
+                ticket.total_quantity -
+                ticket.available_quantity
+              }}
+            </strong>
+          </div>
+        </div>
+
+        <div class="ticket-actions">
+          <button
+            type="button"
+            class="edit-ticket-button"
+            (click)="editTicket(ticket)"
+            [disabled]="isSavingTicket"
+          >
+            Düzenle
+          </button>
+
+          <button
+            type="button"
+            class="delete-ticket-button"
+            (click)="deleteTicket(ticket)"
+            [disabled]="isSavingTicket"
+          >
+            Sil
+          </button>
+        </div>
+      </article>
+    </div>
+
+    <!-- Bilet ekleme / düzenleme formu -->
+    <div
+      class="ticket-management-form"
+      *ngIf="showTicketManagementForm"
+      [formGroup]="ticketManagementForm"
+    >
+      <div class="ticket-form-header">
+        <div>
+          <h3>
+            {{
+              editingTicketId !== null
+                ? 'Bileti Düzenle'
+                : 'Yeni Bilet Türü Ekle'
+            }}
+          </h3>
+
+          <p>
+            {{
+              editingTicketId !== null
+                ? 'Bilet türünü ve toplam kontenjanını güncelle.'
+                : 'Etkinlik için yeni bir bilet türü oluştur.'
+            }}
+          </p>
+        </div>
+      </div>
+
+      <div class="form-grid">
+
+        <div class="form-group">
+          <label for="management-ticket-type">
+            Bilet türü
+          </label>
+
+          <input
+            id="management-ticket-type"
+            type="text"
+            formControlName="ticket_type"
+            placeholder="Örnek: VIP"
+          >
+
+          <small
+            class="field-error"
+            *ngIf="
+              ticketManagementForm.controls.ticket_type.touched &&
+              ticketManagementForm.controls.ticket_type.invalid
+            "
+          >
+            Bilet türü zorunludur.
+          </small>
+        </div>
+
+        <div class="form-group">
+          <label for="management-ticket-quantity">
+            Toplam kontenjan
+          </label>
+
+          <input
+            id="management-ticket-quantity"
+            type="number"
+            min="1"
+            formControlName="total_quantity"
+            placeholder="Örnek: 30"
+          >
+
+          <small
+            class="field-error"
+            *ngIf="
+              ticketManagementForm.controls.total_quantity.touched &&
+              ticketManagementForm.controls.total_quantity.invalid
+            "
+          >
+            Kontenjan en az 1 olmalıdır.
+          </small>
+        </div>
+
+      </div>
+
+      <div class="ticket-form-actions">
+
+        <button
+          type="button"
+          class="cancel-ticket-button"
+          (click)="cancelTicketForm()"
+          [disabled]="isSavingTicket"
+        >
+          Vazgeç
+        </button>
+
+        <button
+          type="button"
+          class="save-ticket-button"
+          (click)="saveTicket()"
+          [disabled]="isSavingTicket"
+        >
+          {{
+            isSavingTicket
+              ? 'Kaydediliyor...'
+              : (
+                  editingTicketId !== null
+                    ? 'Bileti Güncelle'
+                    : 'Bileti Ekle'
+                )
+          }}
+        </button>
+
+      </div>
+    </div>
+
+  </div>
+</section>
+      <!-- BUTONLAR -->
+      <footer class="form-actions">
+
+        <button
+          type="button"
+          class="cancel-button"
+          (click)="cancel()"
+          [disabled]="isSubmitting"
+        >
+          Vazgeç
+        </button>
+
+        <button
+          type="submit"
+          class="submit-button"
+          [disabled]="isSubmitting"
+        >
+          {{
+            isSubmitting
+              ? (
+                  isEditMode
+                    ? 'Etkinlik güncelleniyor...'
+                    : 'Etkinlik oluşturuluyor...'
+                )
+              : (
+                  isEditMode
+                    ? 'Değişiklikleri Kaydet'
+                    : 'Etkinliği Oluştur'
+                )
+          }}
+        </button>
+
+      </footer>
+
+    </form>
+  </div>
+</section>

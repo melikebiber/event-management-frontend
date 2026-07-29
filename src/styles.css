@@ -1,0 +1,51 @@
+:root {
+  --primary-color: #f65858;
+  --primary-hover: #e94747;
+
+  --text-color: #212121;
+  --muted-text: #6f7074;
+
+  --background-color: #ffffff;
+  --surface-color: #f7f7f7;
+
+  --border-color: #e5e7eb;
+  --success-color: #2e7d32;
+  --error-color: #c62828;
+
+  --container-width: 1200px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family:
+    Inter,
+    Arial,
+    Helvetica,
+    sans-serif;
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+a {
+  color: inherit;
+}

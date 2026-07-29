@@ -1,0 +1,427 @@
+<section class="event-detail-page">
+
+  <!-- Yükleniyor -->
+  <div
+    class="state-card"
+    *ngIf="isLoading"
+  >
+    <div class="loading-spinner"></div>
+    <p>Etkinlik bilgileri yükleniyor...</p>
+  </div>
+
+  <!-- Hata durumu -->
+  <div
+    class="state-card error-state"
+    *ngIf="!isLoading && errorMessage"
+  >
+    <h2>Bir sorun oluştu</h2>
+
+    <p>{{ errorMessage }}</p>
+
+    <button
+      type="button"
+      class="secondary-button"
+      (click)="goBack()"
+    >
+      Etkinliklere Dön
+    </button>
+  </div>
+
+  <!-- Etkinlik detayı -->
+  <div
+    class="event-detail-container"
+    *ngIf="!isLoading && event"
+  >
+
+    <button
+      type="button"
+      class="back-button"
+      (click)="goBack()"
+    >
+      <span aria-hidden="true">←</span>
+      Etkinliklere Dön
+    </button>
+
+    <!-- Üst başlık alanı -->
+
+<header class="event-hero">
+
+  <div class="hero-image-wrapper">
+
+    <img
+      *ngIf="event"
+      class="hero-image"
+      [src]="getEventImage(
+        event.category?.category_name || '',
+        event.title || ''
+      )"
+      [alt]="event.title"
+    >
+
+    <div class="image-overlay"></div>
+
+    <div class="image-badges">
+
+      <span class="category-badge">
+        {{ event.category.category_name }}
+      </span>
+
+      <span
+        class="status-badge"
+        [class.passive]="event.status !== 'active'"
+      >
+        {{
+          event.status === 'active'
+            ? 'Aktif'
+            : event.status
+        }}
+      </span>
+
+    </div>
+
+  </div>
+
+  <div class="hero-content">
+
+    <span class="hero-label">
+      ETKİNLİK DETAYI
+    </span>
+
+    <h1>
+      {{ event.title }}
+    </h1>
+
+    <p class="description">
+      {{ event.description }}
+    </p>
+
+    <div class="hero-meta">
+
+      <span>
+        📅 {{ event.event_date }}
+      </span>
+
+      <span>
+        🕒
+        {{ event.start_time }}
+        –
+        {{ event.end_time }}
+      </span>
+
+      <span>
+        📍 {{ event.location.city }}
+      </span>
+
+    </div>
+
+  </div>
+
+</header>
+
+    <div class="detail-layout">
+
+      <!-- Sol taraf -->
+      <main class="main-column">
+
+        <section class="content-card information-card">
+
+          <div class="section-heading">
+            <span class="section-label">
+              ETKİNLİK DETAYLARI
+            </span>
+
+            <h2>Etkinlik Bilgileri</h2>
+          </div>
+
+          <div class="info-grid">
+
+            <div class="info-item">
+
+              <div class="info-icon">
+                📅
+              </div>
+
+              <div>
+                <span class="info-label">
+                  Tarih
+                </span>
+
+                <strong>
+                  {{ event.event_date }}
+                </strong>
+              </div>
+
+            </div>
+
+            <div class="info-item">
+
+              <div class="info-icon">
+                🕒
+              </div>
+
+              <div>
+                <span class="info-label">
+                  Saat
+                </span>
+
+                <strong>
+                  {{ event.start_time }}
+                  –
+                  {{ event.end_time }}
+                </strong>
+              </div>
+
+            </div>
+
+            <div class="info-item">
+
+              <div class="info-icon">
+                📍
+              </div>
+
+              <div>
+                <span class="info-label">
+                  Konum
+                </span>
+
+                <strong>
+                  {{ event.location.location_name }}
+                </strong>
+
+                <small>
+                  {{ event.location.district }},
+                  {{ event.location.city }}
+                </small>
+              </div>
+
+            </div>
+
+            <div class="info-item">
+
+              <div class="info-icon">
+                👥
+              </div>
+
+              <div>
+                <span class="info-label">
+                  Kapasite
+                </span>
+
+                <strong>
+                  {{ event.capacity }} kişi
+                </strong>
+              </div>
+
+            </div>
+
+          </div>
+
+        </section>
+
+        <section class="content-card organizer-card">
+
+          <div class="organizer-avatar">
+            {{
+              event.organizer.name
+                ? event.organizer.name.charAt(0)
+                : 'E'
+            }}
+          </div>
+
+          <div class="organizer-content">
+
+            <span class="section-label">
+              DÜZENLEYEN
+            </span>
+
+            <h2>
+              {{ event.organizer.name }}
+              {{ event.organizer.surname }}
+            </h2>
+
+            <p>
+              Bu etkinlik hakkında ayrıntılı bilgi almak
+              için etkinlik düzenleyicisiyle iletişime
+              geçebilirsin.
+            </p>
+
+          </div>
+
+        </section>
+
+      </main>
+
+      <!-- Sağ taraf -->
+      <aside class="side-column">
+
+        <section class="registration-card">
+
+          <div class="registration-header">
+
+            <span class="section-label">
+              KATILIM
+            </span>
+
+            <h2>Etkinliğe Katıl</h2>
+
+            <p>
+              Katılmak istediğin bilet türünü seç.
+            </p>
+
+          </div>
+
+          <!-- Bilet seçenekleri -->
+          <div
+            class="ticket-options"
+            *ngIf="tickets.length > 0; else noTicket"
+          >
+
+            <button
+              type="button"
+              class="ticket-option"
+              *ngFor="let ticket of tickets"
+              [class.selected]="
+                selectedTicket?.ticket_id ===
+                ticket.ticket_id
+              "
+              [class.sold-out]="
+                ticket.available_quantity <= 0
+              "
+              [disabled]="
+                ticket.available_quantity <= 0
+              "
+              (click)="selectedTicket = ticket"
+            >
+
+              <div class="ticket-radio">
+
+                <span
+                  class="radio-dot"
+                  *ngIf="
+                    selectedTicket?.ticket_id ===
+                    ticket.ticket_id
+                  "
+                ></span>
+
+              </div>
+
+              <div class="ticket-details">
+
+                <strong>
+                  {{ ticket.ticket_type }}
+                </strong>
+
+                <span
+                  *ngIf="
+                    ticket.available_quantity > 0
+                  "
+                >
+                  {{ ticket.available_quantity }}
+                  bilet kaldı
+                </span>
+
+                <span
+                  class="sold-out-text"
+                  *ngIf="
+                    ticket.available_quantity <= 0
+                  "
+                >
+                  Tükendi
+                </span>
+
+              </div>
+
+              <span
+                class="selected-text"
+                *ngIf="
+                  selectedTicket?.ticket_id ===
+                  ticket.ticket_id
+                "
+              >
+                Seçildi
+              </span>
+
+            </button>
+
+          </div>
+
+          <ng-template #noTicket>
+
+            <p class="no-ticket-message">
+              Bu etkinlik için uygun bilet bulunamadı.
+            </p>
+
+          </ng-template>
+
+          <!-- Seçim özeti -->
+          <div
+            class="selection-summary"
+            *ngIf="selectedTicket"
+          >
+
+            <div>
+              <span>Seçilen bilet</span>
+
+              <strong>
+                {{ selectedTicket.ticket_type }}
+              </strong>
+            </div>
+
+            <div>
+              <span>Kalan kontenjan</span>
+
+              <strong>
+                {{
+                  selectedTicket.available_quantity
+                }}
+              </strong>
+            </div>
+
+          </div>
+
+          <button
+            type="button"
+            class="register-button"
+            (click)="registerForEvent()"
+            [disabled]="
+              isRegistering ||
+              !selectedTicket ||
+              selectedTicket.available_quantity <= 0 ||
+              event.status !== 'active'
+            "
+          >
+            {{
+              isRegistering
+                ? 'Kayıt oluşturuluyor...'
+                : event.status !== 'active'
+                  ? 'Etkinlik Aktif Değil'
+                  : selectedTicket &&
+                    selectedTicket.available_quantity <= 0
+                    ? 'Kontenjan Doldu'
+                    : 'Etkinliğe Katıl'
+            }}
+          </button>
+
+          <p class="secure-message">
+            Katılım işlemin seçtiğin bilet türüne göre
+            oluşturulur.
+          </p>
+
+          <p
+            class="registration-message"
+            *ngIf="registrationMessage"
+            [class.success]="registrationSuccess"
+            [class.error]="!registrationSuccess"
+          >
+            {{ registrationMessage }}
+          </p>
+
+        </section>
+
+      </aside>
+
+    </div>
+
+  </div>
+
+</section>

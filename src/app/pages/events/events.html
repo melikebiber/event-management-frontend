@@ -1,0 +1,266 @@
+<section class="events-page">
+  <div class="events-container">
+
+    <section class="filter-bar">
+
+  <div class="filter-group">
+    <label for="category">Kategori</label>
+
+    <div class="filter-control">
+      <span class="filter-control-icon">▦</span>
+
+      <select
+        id="category"
+        [(ngModel)]="selectedCategory"
+      >
+        <option value="">Tüm kategoriler</option>
+
+        <option
+          *ngFor="let category of categories"
+          [value]="category"
+        >
+          {{ category }}
+        </option>
+      </select>
+    </div>
+  </div>
+
+  <div class="filter-group">
+    <label for="city">Şehir</label>
+
+    <div class="filter-control">
+      <span class="filter-control-icon">📍</span>
+
+      <select
+        id="city"
+        [(ngModel)]="selectedCity"
+      >
+        <option value="">Tüm şehirler</option>
+
+        <option
+          *ngFor="let city of cities"
+          [value]="city"
+        >
+          {{ city }}
+        </option>
+      </select>
+    </div>
+  </div>
+
+  <div class="filter-group">
+    <label for="date">Tarih</label>
+
+    <div class="filter-control">
+      <span class="filter-control-icon">📅</span>
+
+      <input
+        id="date"
+        type="date"
+        [(ngModel)]="selectedDate"
+      >
+    </div>
+  </div>
+
+  <div class="filter-actions">
+    <button
+      type="button"
+      class="filter-button"
+      (click)="filterEvents()"
+    >
+      Etkinlikleri bul
+      <span>→</span>
+    </button>
+
+    <button
+      type="button"
+      class="clear-button"
+      (click)="clearFilters()"
+    >
+      Temizle
+    </button>
+  </div>
+
+</section>
+    <!-- Yüklenme -->
+    <div
+      class="state-area"
+      *ngIf="isLoading"
+    >
+      <div class="loading-spinner"></div>
+
+      <h2>Etkinlikler yükleniyor</h2>
+
+      <p>
+        Sana uygun etkinlikleri hazırlıyoruz.
+      </p>
+    </div>
+
+    <!-- Hata -->
+    <div
+      class="state-area"
+      *ngIf="!isLoading && errorMessage"
+    >
+      <div class="state-icon">!</div>
+
+      <h2>Bir sorun oluştu</h2>
+
+      <p>{{ errorMessage }}</p>
+    </div>
+
+    <!-- Sonuç başlığı -->
+    <div
+      class="results-header"
+      *ngIf="!isLoading && !errorMessage"
+    >
+      <div>
+        <span class="results-label">YAKLAŞAN ETKİNLİKLER</span>
+
+        <h2>Keşfetmeye başla</h2>
+
+        <p *ngIf="filteredEvents.length > 0">
+          {{ filteredEvents.length }} etkinlik bulundu.
+        </p>
+      </div>
+    </div>
+
+    <!-- Boş sonuç -->
+    <div
+      class="state-area"
+      *ngIf="
+        !isLoading &&
+        !errorMessage &&
+        filteredEvents.length === 0
+      "
+    >
+      <div class="state-icon">🔎</div>
+
+      <h2>Etkinlik bulunamadı</h2>
+
+      <p>
+        Seçtiğin filtrelerle eşleşen bir etkinlik bulunamadı.
+      </p>
+
+      <button
+        type="button"
+        class="state-button"
+        (click)="clearFilters()"
+      >
+        Filtreleri temizle
+      </button>
+    </div>
+
+    <!-- Etkinlik kartları -->
+    <div
+      class="events-grid"
+      *ngIf="
+        !isLoading &&
+        !errorMessage &&
+        filteredEvents.length > 0
+      "
+    >
+
+      <article
+        class="event-card"
+        *ngFor="let event of filteredEvents"
+        (click)="goToEventDetail(event.event_id)"
+      >
+<div class="event-image">
+
+  <img
+    [src]="getEventImage(
+  event.category.category_name,
+  event.title
+)"
+    [alt]="event.title"
+  >
+
+  <div class="image-overlay"></div>
+
+  <span class="category-badge">
+    {{ event.category.category_name }}
+  </span>
+
+  <span
+    class="status-badge"
+    [class.passive]="event.status !== 'active'"
+  >
+    {{ event.status === 'active' ? 'Aktif' : event.status }}
+  </span>
+
+</div>
+
+        <div class="event-card-content">
+
+          <div class="event-date-line">
+            <span>
+              {{ event.event_date | date:'dd.MM.yyyy' }}
+            </span>
+
+            <span>
+              {{ event.start_time }}
+            </span>
+          </div>
+
+          <h3>{{ event.title }}</h3>
+
+          <p class="event-description">
+            {{
+              event.description ||
+              'Bu etkinlik için henüz bir açıklama bulunmuyor.'
+            }}
+          </p>
+
+          <div class="event-location">
+            <span class="location-icon">📍</span>
+
+            <div>
+              <strong>
+                {{ event.location.location_name }}
+              </strong>
+
+              <small>
+                {{ event.location.district }},
+                {{ event.location.city }}
+              </small>
+            </div>
+          </div>
+
+          <div class="event-card-footer">
+
+            <div class="organizer">
+              <span>Düzenleyen</span>
+
+              <strong>
+                {{ event.organizer.name }}
+                {{ event.organizer.surname }}
+              </strong>
+            </div>
+
+            <div class="event-meta">
+              <span class="capacity">
+                👥 {{ event.capacity }}
+              </span>
+
+              <button
+                type="button"
+                class="detail-button"
+                (click)="
+                  $event.stopPropagation();
+                  goToEventDetail(event.event_id)
+                "
+              >
+                İncele
+                <span>→</span>
+              </button>
+            </div>
+
+          </div>
+
+        </div>
+
+      </article>
+
+    </div>
+
+  </div>
+</section>

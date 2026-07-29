@@ -1,0 +1,248 @@
+<section class="admin-page">
+  <div class="admin-container">
+
+    <header class="admin-header">
+
+      <div>
+        <span class="page-label">
+          YÖNETİM PANELİ
+        </span>
+
+        <h1>Admin Paneli</h1>
+
+        <p>
+          Etkinlikleri görüntüle, düzenle ve platform
+          içeriklerini yönet.
+        </p>
+      </div>
+
+      <a
+  routerLink="/admin/events/new"
+  class="create-button"
+>
+  <span>＋</span>
+  Yeni Etkinlik
+</a>
+
+    </header>
+
+    <!-- Özet bilgiler -->
+    <section class="summary-area">
+
+      <article class="summary-item">
+        <span class="summary-label">
+          Toplam etkinlik
+        </span>
+
+        <strong>{{ totalEvents }}</strong>
+
+        <p>
+          Sistemde kayıtlı etkinlik
+        </p>
+      </article>
+
+      <article class="summary-item">
+        <span class="summary-label">
+          Aktif etkinlik
+        </span>
+
+        <strong>{{ activeEvents }}</strong>
+
+        <p>
+          Katılıma açık etkinlik
+        </p>
+      </article>
+
+      <article class="summary-item">
+        <span class="summary-label">
+          Toplam kapasite
+        </span>
+
+        <strong>{{ totalCapacity }}</strong>
+
+        <p>
+          Etkinliklerin toplam kapasitesi
+        </p>
+      </article>
+
+    </section>
+
+    <!-- Yükleniyor -->
+    <div
+      class="state-message"
+      *ngIf="isLoading"
+    >
+      Etkinlikler yükleniyor...
+    </div>
+
+    <!-- Hata -->
+    <div
+      class="state-message error"
+      *ngIf="!isLoading && errorMessage"
+    >
+      {{ errorMessage }}
+    </div>
+
+    <!-- Etkinlik tablosu -->
+    <section
+      class="events-section"
+      *ngIf="!isLoading && !errorMessage"
+    >
+
+      <div class="section-heading">
+        <p
+  class="delete-message"
+  *ngIf="deleteMessage"
+>
+  {{ deleteMessage }}
+</p>
+
+        <div>
+          <span class="section-label">
+            ETKİNLİK YÖNETİMİ
+          </span>
+
+          <h2>Tüm etkinlikler</h2>
+        </div>
+
+        <span class="event-count">
+          {{ totalEvents }} etkinlik
+        </span>
+
+      </div>
+
+      <div
+        class="empty-state"
+        *ngIf="events.length === 0"
+      >
+        Henüz etkinlik bulunmuyor.
+      </div>
+
+      <div
+        class="table-wrapper"
+        *ngIf="events.length > 0"
+      >
+
+        <table class="events-table">
+
+          <thead>
+            <tr>
+              <th>Etkinlik</th>
+              <th>Kategori</th>
+              <th>Konum</th>
+              <th>Tarih</th>
+              <th>Kapasite</th>
+              <th>Durum</th>
+              <th>İşlemler</th>
+            </tr>
+          </thead>
+
+          <tbody>
+
+            <tr *ngFor="let event of events">
+
+              <td>
+                <div class="event-title-cell">
+                  <strong>{{ event.title }}</strong>
+
+                  <span>
+                    #{{ event.event_id }}
+                  </span>
+                </div>
+              </td>
+
+              <td>
+                {{ event.category.category_name }}
+              </td>
+
+              <td>
+                <div class="location-cell">
+                  <strong>
+                    {{ event.location.city }}
+                  </strong>
+
+                  <span>
+                    {{ event.location.location_name }}
+                  </span>
+                </div>
+              </td>
+
+              <td>
+                <div class="date-cell">
+                  <strong>
+                    {{ event.event_date }}
+                  </strong>
+
+                  <span>
+                    {{ event.start_time }}
+                  </span>
+                </div>
+              </td>
+
+              <td>
+                {{ event.capacity }}
+              </td>
+
+              <td>
+                <span
+                  class="status-badge"
+                  [class.passive]="
+                    event.status !== 'active'
+                  "
+                >
+                  {{
+                    event.status === 'active'
+                      ? 'Aktif'
+                      : event.status
+                  }}
+                </span>
+              </td>
+
+              <td>
+                <div class="action-buttons">
+
+  <a
+    class="view-button"
+    [routerLink]="[
+      '/events',
+      event.event_id
+    ]"
+  >
+    İncele
+  </a>
+
+  <a
+    class="edit-button"
+    [routerLink]="[
+      '/admin/events',
+      event.event_id,
+      'edit'
+    ]"
+  >
+    Düzenle
+  </a>
+
+  <button
+    type="button"
+    class="delete-button"
+    (click)="
+      $event.stopPropagation();
+      deleteEvent(
+        event.event_id,
+        event.title
+      )
+    "
+    [disabled]="
+      isDeleting &&
+      deletingEventId === event.event_id
+    "
+  >
+    {{
+      isDeleting &&
+      deletingEventId === event.event_id
+        ? 'Siliniyor...'
+        : 'Sil'
+    }}
+  </button>
+
+</div>
