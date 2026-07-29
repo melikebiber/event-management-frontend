@@ -448,93 +448,126 @@
       </section>
 
       <!-- 05 BİLET BİLGİLERİ -->
-      <section
-        class="form-section"
-        *ngIf="!isEditMode"
-        [formGroup]="ticketForm"
+<section
+  class="form-section"
+  *ngIf="!isEditMode"
+  [formGroup]="ticketForm"
+>
+  <div class="section-heading">
+    <span class="section-number">05</span>
+
+    <div>
+      <h2>Bilet bilgileri</h2>
+
+      <p>
+        Etkinliğe ait bir veya birden fazla
+        bilet türü ekleyebilirsin.
+      </p>
+    </div>
+  </div>
+
+  <div formArrayName="tickets">
+
+    <div
+      class="form-grid"
+      *ngFor="
+        let ticketGroup of ticketForms.controls;
+        let i = index
+      "
+      [formGroupName]="i"
+    >
+      <div class="form-group">
+        <label [for]="'ticket-type-' + i">
+          Bilet türü
+        </label>
+
+        <input
+          [id]="'ticket-type-' + i"
+          type="text"
+          formControlName="ticket_type"
+          placeholder="Örnek: Standart, VIP, Öğrenci"
+        >
+
+        <small
+          class="field-error"
+          *ngIf="
+            ticketGroup.get('ticket_type')?.touched &&
+            ticketGroup.get('ticket_type')?.invalid
+          "
+        >
+          Bilet türü zorunludur.
+        </small>
+      </div>
+
+      <div class="form-group">
+        <div class="field-heading">
+          <label [for]="'ticket-quantity-' + i">
+            Bilet kontenjanı
+          </label>
+
+          <button
+            type="button"
+            class="add-location-button"
+            *ngIf="i === 0"
+            (click)="addInitialTicket()"
+          >
+            + Yeni Bilet Türü Ekle
+          </button>
+        </div>
+
+        <input
+          [id]="'ticket-quantity-' + i"
+          type="number"
+          min="1"
+          formControlName="ticket_quantity"
+          placeholder="Örnek: 100"
+        >
+
+        <small
+          class="field-error"
+          *ngIf="
+            ticketGroup.get('ticket_quantity')?.touched &&
+            ticketGroup.get('ticket_quantity')?.invalid
+          "
+        >
+          Bilet kontenjanı en az 1 olmalıdır.
+        </small>
+      </div>
+
+      <div
+        class="form-group"
+        *ngIf="ticketForms.length > 1"
       >
+        <button
+          type="button"
+          class="delete-ticket-button"
+          (click)="removeInitialTicket(i)"
+        >
+          Bilet Türünü Sil
+        </button>
+      </div>
+    </div>
 
-        <div class="section-heading">
-          <span class="section-number">05</span>
+  </div>
 
-          <div>
-            <h2>Bilet bilgileri</h2>
-
-            <p>
-              Etkinliğin başlangıç bilet türünü ve
-              bilet kontenjanını belirle.
-            </p>
-          </div>
-        </div>
-
-        <div class="form-grid">
-
-          <div class="form-group">
-            <label for="ticket-type">
-              Bilet türü
-            </label>
-
-            <input
-              id="ticket-type"
-              type="text"
-              formControlName="ticket_type"
-              placeholder="Örnek: Standart"
-            >
-
-            <small
-              class="field-error"
-              *ngIf="
-                ticketForm.controls.ticket_type.touched &&
-                ticketForm.controls.ticket_type.invalid
-              "
-            >
-              Bilet türü zorunludur.
-            </small>
-          </div>
-
-          <div class="form-group">
-            <label for="ticket-quantity">
-              Bilet kontenjanı
-            </label>
-
-            <input
-              id="ticket-quantity"
-              type="number"
-              min="1"
-              formControlName="ticket_quantity"
-              placeholder="Örnek: 100"
-            >
-
-            <small
-              class="field-error"
-              *ngIf="
-                ticketForm.controls.ticket_quantity.touched &&
-                ticketForm.controls.ticket_quantity.invalid
-              "
-            >
-              Bilet kontenjanı en az 1 olmalıdır.
-            </small>
-          </div>
-
-        </div>
-      </section>
+</section>
 <!-- 06 MEVCUT BİLETLERİ YÖNET -->
 <section
   class="form-section"
   *ngIf="isEditMode"
 >
   <div class="section-heading">
-    <span class="section-number">05</span>
+  <span class="section-number">05</span>
 
-    <div>
-      <h2>Bilet yönetimi</h2>
+  <div>
+    <h2>Bilet yönetimi</h2>
 
-      <p>
-        Etkinliğin mevcut biletlerini düzenle
-        veya yeni bir bilet türü ekle.
-      </p>
-    </div>
+    <p>
+      Etkinliğin mevcut biletlerini düzenle
+      veya yeni bir bilet türü ekle.
+    </p>
   </div>
+</div>
 
   <div class="ticket-management-area">
 

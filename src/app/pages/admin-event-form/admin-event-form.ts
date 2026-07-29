@@ -6,12 +6,6 @@ import {
 
 import { CommonModule } from '@angular/common';
 
-import {
-  FormControl,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators
-} from '@angular/forms';
 
 import {
   ActivatedRoute,
@@ -35,6 +29,16 @@ import {
   Ticket,
   TicketService
 } from '../../services/ticket';
+
+import { forkJoin } from 'rxjs';
+
+import {
+  FormArray,
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators
+} from '@angular/forms';
 
 interface CurrentUser {
   id: number;
@@ -175,12 +179,19 @@ export class AdminEventForm implements OnInit {
    * Yeni etkinlik oluşturulurken
    * ilk bilet kaydını oluşturmak için kullanılır.
    */
-  ticketForm = new FormGroup({
-    ticket_type: new FormControl('Standart', {
+ ticketForm = new FormGroup({
+  tickets: new FormArray([
+    this.createTicketFormGroup('Standart')
+  ])
+});
+
+createTicketFormGroup(
+  defaultType: string = ''
+): FormGroup {
+  return new FormGroup({
+    ticket_type: new FormControl(defaultType, {
       nonNullable: true,
-      validators: [
-        Validators.required
-      ]
+      validators: [Validators.required]
     }),
 
     ticket_quantity: new FormControl<number | null>(
@@ -193,6 +204,25 @@ export class AdminEventForm implements OnInit {
       }
     )
   });
+}
+
+get ticketForms(): FormArray {
+  return this.ticketForm.controls.tickets;
+}
+
+addInitialTicket(): void {
+  this.ticketForms.push(
+    this.createTicketFormGroup()
+  );
+}
+
+removeInitialTicket(index: number): void {
+  if (this.ticketForms.length <= 1) {
+    return;
+  }
+
+  this.ticketForms.removeAt(index);
+}
 
   /*
    * Düzenleme sayfasında yeni bilet eklemek
@@ -556,6 +586,30 @@ export class AdminEventForm implements OnInit {
 
       return;
     }
+    /*
+ * Yeni etkinlik oluşturulurken
+ * bütün bilet kontenjanlarının toplamını kontrol eder.
+ */
+if (!this.isEditMode) {
+  const ticketDataList =
+    this.ticketForms.getRawValue();
+
+  const totalTicketQuantity =
+    ticketDataList.reduce(
+      (total, ticket) =>
+        total +
+        Number(ticket.ticket_quantity ?? 0),
+      0
+    );
+
+  if (totalTicketQuantity > formData.capacity) {
+    this.errorMessage =
+      `Toplam bilet kontenjanı (${totalTicketQuantity}), ` +
+      `etkinlik kapasitesini (${formData.capacity}) aşamaz.`;
+
+    return;
+  }
+}
 
     const eventData: EventData = {
       title:
@@ -667,18 +721,13 @@ export class AdminEventForm implements OnInit {
   private createEventWithTicket(
     eventData: EventData
   ): void {
-    const ticketData =
-      this.ticketForm.getRawValue();
+    const ticketDataList =
+      this.ticketForms.getRawValue();
 
-    const ticketQuantity =
-      ticketData.ticket_quantity;
-
-    if (ticketQuantity === null) {
+    if (ticketDataList.length === 0) {
       this.isSubmitting = false;
-
       this.errorMessage =
-        'Bilet kontenjanı zorunludur.';
-
+        'En az bir bilet türü eklemelisin.';
       return;
     }
 
@@ -696,60 +745,55 @@ export class AdminEventForm implements OnInit {
 
           if (!createdEventId) {
             this.isSubmitting = false;
-
             this.errorMessage =
               'Etkinlik oluşturuldu ancak etkinlik numarası alınamadı.';
-
             this.changeDetector.detectChanges();
             return;
           }
 
-          const newTicketData = {
-            event_id:
-              createdEventId,
+          const ticketRequests =
+            ticketDataList.map((ticketData) => {
+              const ticketQuantity =
+                ticketData.ticket_quantity;
 
-            ticket_type:
-              ticketData.ticket_type.trim(),
-
-            total_quantity:
-              ticketQuantity,
-
-            available_quantity:
-              ticketQuantity
-          };
-
-          this.ticketService
-            .createTicket(newTicketData)
-            .subscribe({
-              next: () => {
-                this.isSubmitting = false;
-
-                this.successMessage =
-                  'Etkinlik ve bilet başarıyla oluşturuldu.';
-
-                this.changeDetector.detectChanges();
-
-                setTimeout(() => {
-                  this.router.navigate(['/admin']);
-                }, 1000);
-              },
-
-              error: (ticketError) => {
-                console.error(
-                  'Bilet oluşturulamadı:',
-                  ticketError
-                );
-
-                this.isSubmitting = false;
-
-                this.errorMessage =
-                  ticketError.error?.message ??
-                  ticketError.error?.error ??
-                  'Etkinlik oluşturuldu ancak bilet oluşturulamadı.';
-
-                this.changeDetector.detectChanges();
-              }
+              return this.ticketService.createTicket({
+                event_id: createdEventId,
+                ticket_type:
+                  ticketData.ticket_type.trim(),
+                total_quantity:
+                  ticketQuantity,
+                available_quantity:
+                  ticketQuantity
+              });
             });
+
+          forkJoin(ticketRequests).subscribe({
+            next: () => {
+              this.isSubmitting = false;
+              this.successMessage =
+                'Etkinlik ve bilet türleri başarıyla oluşturuldu.';
+              this.changeDetector.detectChanges();
+
+              setTimeout(() => {
+                this.router.navigate(['/admin']);
+              }, 1000);
+            },
+
+            error: (ticketError) => {
+              console.error(
+                'Biletler oluşturulamadı:',
+                ticketError
+              );
+
+              this.isSubmitting = false;
+              this.errorMessage =
+                ticketError.error?.message ??
+                ticketError.error?.error ??
+                'Etkinlik oluşturuldu ancak bazı bilet türleri oluşturulamadı.';
+
+              this.changeDetector.detectChanges();
+            }
+          });
         },
 
         error: (eventError) => {
@@ -759,11 +803,10 @@ export class AdminEventForm implements OnInit {
           );
 
           this.isSubmitting = false;
-
           this.errorMessage =
             eventError.error?.message ??
             eventError.error?.error ??
-            'Etkinlik oluşturulurken bir hata oluştu.';
+            'Etkinlik oluşturulurken hata oluştu.';
 
           this.changeDetector.detectChanges();
         }
