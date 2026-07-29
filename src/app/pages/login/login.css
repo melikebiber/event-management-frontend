@@ -38,9 +38,9 @@
   display: flex;
   min-height: 100%;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   overflow: visible;
-  padding: 70px 20px;
+  padding: 135px 20px 40px;
   background: transparent;
 }
 
@@ -63,7 +63,7 @@
   width: 38px;
   height: 38px;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   border-radius: 11px;
   background: var(--primary-color);
   color: #ffffff;
@@ -442,7 +442,7 @@
   }
 
   .auth-visual {
-    padding-top: 85px;
+    padding-top: 70px;
   }
 
   .auth-brand {
