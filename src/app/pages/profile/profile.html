@@ -52,6 +52,13 @@
     </div>
 
     <div
+  *ngIf="successMessage"
+  class="message-box success-message"
+>
+  {{ successMessage }}
+</div>
+
+    <div
       *ngIf="isLoading"
       class="profile-loading"
     >
@@ -122,10 +129,74 @@
               </svg>
             </span>
 
-            <span>
-              Genel bilgiler
-            </span>
+            <span>Genel bilgiler</span>
           </a>
+
+        </nav>
+
+        <div class="sidebar-actions">
+
+          <button
+            type="button"
+            class="sidebar-edit-button"
+            (click)="openProfileModal()"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              aria-hidden="true"
+            >
+              <path
+                d="M4 20H8L19 9L15 5L4 16V20Z"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linejoin="round"
+              />
+
+              <path
+                d="M13.5 6.5L17.5 10.5"
+                stroke="currentColor"
+                stroke-width="1.8"
+              />
+            </svg>
+
+            <span>Bilgileri Düzenle</span>
+          </button>
+
+          <button
+            type="button"
+            class="sidebar-password-button"
+            (click)="openPasswordModal()"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              aria-hidden="true"
+            >
+              <rect
+                x="5"
+                y="10"
+                width="14"
+                height="10"
+                rx="2"
+                stroke="currentColor"
+                stroke-width="1.8"
+              />
+
+              <path
+                d="M8 10V7C8 4.8 9.8 3 12 3C14.2 3 16 4.8 16 7V10"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+              />
+            </svg>
+
+            <span>Şifreyi Değiştir</span>
+          </button>
+
+        </div>
+
+        <nav class="profile-navigation">
 
           <a
             routerLink="/my-events"
@@ -153,9 +224,7 @@
               </svg>
             </span>
 
-            <span>
-              Etkinliklerim
-            </span>
+            <span>Etkinliklerim</span>
           </a>
 
           <a
@@ -185,9 +254,7 @@
               </svg>
             </span>
 
-            <span>
-              Etkinlikleri keşfet
-            </span>
+            <span>Etkinlikleri keşfet</span>
           </a>
 
           <a
@@ -243,9 +310,7 @@
               </svg>
             </span>
 
-            <span>
-              Admin paneli
-            </span>
+            <span>Admin paneli</span>
           </a>
 
         </nav>
@@ -285,9 +350,7 @@
             </svg>
           </span>
 
-          <span>
-            Çıkış yap
-          </span>
+          <span>Çıkış yap</span>
         </button>
 
       </aside>
@@ -308,11 +371,6 @@
               bilgilerini bu alanda görüntüleyebilirsin.
             </p>
           </div>
-
-          <span class="account-status">
-            <span></span>
-            Aktif hesap
-          </span>
         </div>
 
         <div class="profile-details">
@@ -482,6 +540,277 @@
       </main>
 
     </section>
+<!-- PROFİL BİLGİLERİ DÜZENLEME PENCERESİ -->
+<div
+  class="modal-backdrop"
+  *ngIf="isProfileModalOpen"
+  (click)="closeProfileModal()"
+>
+  <section
+    class="profile-modal"
+    (click)="$event.stopPropagation()"
+  >
 
+    <div class="modal-header">
+      <div>
+        <span class="modal-label">
+          PROFİL
+        </span>
+
+        <h2>
+          Bilgilerini düzenle
+        </h2>
+
+        <p>
+          Hesabına ait kişisel ve iletişim
+          bilgilerini güncelleyebilirsin.
+        </p>
+      </div>
+
+      <button
+        type="button"
+        class="modal-close"
+        aria-label="Pencereyi kapat"
+        (click)="closeProfileModal()"
+      >
+        ×
+      </button>
+    </div>
+
+    <form
+      [formGroup]="profileForm"
+      (ngSubmit)="saveProfile()"
+    >
+
+      <div class="form-grid">
+
+        <label class="form-field">
+          <span>Ad</span>
+
+          <input
+            type="text"
+            formControlName="name"
+            placeholder="Adınızı girin"
+          >
+
+          <small
+            *ngIf="
+              profileForm.controls['name'].touched &&
+              profileForm.controls['name'].invalid
+            "
+          >
+            Ad en az 2 karakter olmalıdır.
+          </small>
+        </label>
+
+        <label class="form-field">
+          <span>Soyad</span>
+
+          <input
+            type="text"
+            formControlName="surname"
+            placeholder="Soyadınızı girin"
+          >
+
+          <small
+            *ngIf="
+              profileForm.controls['surname'].touched &&
+              profileForm.controls['surname'].invalid
+            "
+          >
+            Soyad en az 2 karakter olmalıdır.
+          </small>
+        </label>
+
+        <label class="form-field full-field">
+          <span>E-posta</span>
+
+          <input
+            type="email"
+            formControlName="email"
+            placeholder="E-posta adresinizi girin"
+          >
+
+          <small
+            *ngIf="
+              profileForm.controls['email'].touched &&
+              profileForm.controls['email'].invalid
+            "
+          >
+            Geçerli bir e-posta adresi girin.
+          </small>
+        </label>
+
+        <label class="form-field full-field">
+          <span>Telefon</span>
+
+          <input
+            type="tel"
+            formControlName="phone"
+            placeholder="Telefon numaranızı girin"
+          >
+        </label>
+
+      </div>
+
+      <div class="modal-actions">
+
+        <button
+          type="button"
+          class="cancel-button"
+          (click)="closeProfileModal()"
+        >
+          Vazgeç
+        </button>
+
+        <button
+          type="submit"
+          class="save-button"
+          [disabled]="isSavingProfile"
+        >
+          {{
+            isSavingProfile
+              ? 'Kaydediliyor...'
+              : 'Değişiklikleri Kaydet'
+          }}
+        </button>
+
+      </div>
+
+    </form>
+
+  </section>
+</div>
+<!-- ŞİFRE DEĞİŞTİRME PENCERESİ -->
+<div
+  class="modal-backdrop"
+  *ngIf="isPasswordModalOpen"
+  (click)="closePasswordModal()"
+>
+  <section
+    class="profile-modal password-modal"
+    (click)="$event.stopPropagation()"
+  >
+
+    <div class="modal-header">
+      <div>
+        <span class="modal-label">
+          GÜVENLİK
+        </span>
+
+        <h2>
+          Şifreni değiştir
+        </h2>
+
+        <p>
+          Güvenliğin için mevcut şifreni
+          doğrulaman gerekir.
+        </p>
+      </div>
+
+      <button
+        type="button"
+        class="modal-close"
+        aria-label="Pencereyi kapat"
+        (click)="closePasswordModal()"
+      >
+        ×
+      </button>
+    </div>
+
+    <form
+      [formGroup]="passwordForm"
+      (ngSubmit)="changePassword()"
+    >
+
+      <div class="form-grid">
+
+        <label class="form-field full-field">
+          <span>Mevcut şifre</span>
+
+          <input
+            type="password"
+            formControlName="currentPassword"
+            placeholder="Mevcut şifrenizi girin"
+          >
+
+          <small
+            *ngIf="
+              passwordForm.controls['currentPassword'].touched &&
+              passwordForm.controls['currentPassword'].invalid
+            "
+          >
+            Mevcut şifre zorunludur.
+          </small>
+        </label>
+
+        <label class="form-field full-field">
+          <span>Yeni şifre</span>
+
+          <input
+            type="password"
+            formControlName="newPassword"
+            placeholder="Yeni şifrenizi girin"
+          >
+
+          <small
+            *ngIf="
+              passwordForm.controls['newPassword'].touched &&
+              passwordForm.controls['newPassword'].invalid
+            "
+          >
+            Yeni şifre en az 6 karakter olmalıdır.
+          </small>
+        </label>
+
+        <label class="form-field full-field">
+          <span>Yeni şifre tekrarı</span>
+
+          <input
+            type="password"
+            formControlName="confirmPassword"
+            placeholder="Yeni şifrenizi tekrar girin"
+          >
+
+          <small
+            *ngIf="
+              passwordForm.controls['confirmPassword'].touched &&
+              passwordForm.controls['confirmPassword'].invalid
+            "
+          >
+            Şifre tekrarı zorunludur.
+          </small>
+        </label>
+
+      </div>
+
+      <div class="modal-actions">
+
+        <button
+          type="button"
+          class="cancel-button"
+          (click)="closePasswordModal()"
+        >
+          Vazgeç
+        </button>
+
+        <button
+          type="submit"
+          class="save-button"
+          [disabled]="isChangingPassword"
+        >
+          {{
+            isChangingPassword
+              ? 'Değiştiriliyor...'
+              : 'Şifreyi Değiştir'
+          }}
+        </button>
+
+      </div>
+
+    </form>
+
+  </section>
+</div>
   </div>
 </section>
