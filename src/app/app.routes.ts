@@ -59,5 +59,14 @@ export const routes: Routes = [
   loadComponent: () =>
     import('./pages/my-ratings/my-ratings')
       .then(m => m.MyRatings)
+},
+{
+  path: 'cancelled-events',
+  loadComponent: () =>
+    import(
+      './pages/cancelled-events/cancelled-events'
+    ).then(
+      m => m.CancelledEvents
+    )
 }
 ];

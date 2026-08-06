@@ -1,0 +1,158 @@
+<section class="cancelled-page">
+
+  <div class="cancelled-container">
+
+    <header class="page-header">
+
+      <div>
+        <span class="page-label">
+          HESABIM
+        </span>
+
+        <h1>İptal Ettiklerim</h1>
+
+        <p>
+          Daha önce iptal ettiğin etkinlik kayıtlarını
+          bu sayfada görüntüleyebilirsin.
+        </p>
+      </div>
+
+      <a
+        routerLink="/profile"
+        class="profile-link"
+      >
+        ← Profilime Dön
+      </a>
+
+    </header>
+
+    <div
+      class="state-card"
+      *ngIf="isLoading"
+    >
+      İptal edilen etkinlikler yükleniyor...
+    </div>
+
+    <div
+      class="state-card error"
+      *ngIf="!isLoading && errorMessage"
+    >
+      {{ errorMessage }}
+    </div>
+
+    <div
+      class="state-card"
+      *ngIf="
+        !isLoading &&
+        !errorMessage &&
+        cancelledRegistrations.length === 0
+      "
+    >
+      Henüz iptal ettiğin bir etkinlik kaydı bulunmuyor.
+    </div>
+
+    <div
+      class="cancelled-list"
+      *ngIf="
+        !isLoading &&
+        !errorMessage &&
+        cancelledRegistrations.length > 0
+      "
+    >
+
+      <article
+        class="cancelled-card"
+        *ngFor="
+          let registration of cancelledRegistrations
+        "
+      >
+
+        <img
+          class="event-image"
+          [src]="
+            getEventImage(
+              registration.event
+                ?.category
+                ?.category_name || '',
+              registration.event?.title || ''
+            )
+          "
+          [alt]="registration.event?.title"
+        >
+
+        <div class="event-content">
+
+          <div class="event-top">
+
+            <div>
+              <span class="cancelled-badge">
+                İPTAL EDİLDİ
+              </span>
+
+              <h2>
+                {{ registration.event?.title }}
+              </h2>
+            </div>
+
+            <a
+              [routerLink]="[
+                '/events',
+                registration.event?.event_id
+              ]"
+              class="details-link"
+            >
+              Detayları Gör
+            </a>
+
+          </div>
+
+          <div class="event-meta">
+
+            <span>
+              📅
+              {{
+                registration.event?.event_date
+                  | date:'dd.MM.yyyy'
+              }}
+            </span>
+
+            <span>
+              🕒
+              {{ registration.event?.start_time }}
+              –
+              {{ registration.event?.end_time }}
+            </span>
+
+            <span>
+              📍
+              {{
+                registration.event
+                  ?.location
+                  ?.location_name
+              }}
+            </span>
+
+            <span>
+              🎟️
+              {{
+                registration.ticket?.ticket_type
+              }}
+            </span>
+
+          </div>
+
+          <p>
+            {{
+              registration.event?.description
+            }}
+          </p>
+
+        </div>
+
+      </article>
+
+    </div>
+
+  </div>
+
+</section>

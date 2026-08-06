@@ -87,6 +87,13 @@ private apiUrl =
       `${this.apiUrl}/user/${userId}`
     );
   }
+  getUserCancelledRegistrations(
+  userId: number
+): Observable<UserRegistrationsResponse> {
+  return this.http.get<UserRegistrationsResponse>(
+    `${this.apiUrl}/user/${userId}/cancelled`
+  );
+}
 
   cancelRegistration(
     registrationId: number

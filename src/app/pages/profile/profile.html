@@ -196,146 +196,176 @@
 
         </div>
 
-        <nav class="profile-navigation">
+  <nav class="profile-navigation">
 
-          <a
-            routerLink="/my-events"
-            class="navigation-link"
-          >
-            <span class="navigation-icon">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                aria-hidden="true"
-              >
-                <path
-                  d="M4 7H20V17H4V7Z"
-                  stroke="currentColor"
-                  stroke-width="1.8"
-                  stroke-linejoin="round"
-                />
+  <a
+    routerLink="/my-events"
+    class="navigation-link"
+  >
+    <span class="navigation-icon">
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        aria-hidden="true"
+      >
+        <path
+          d="M4 7H20V17H4V7Z"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linejoin="round"
+        />
 
-                <path
-                  d="M9 7V17M15 7V17"
-                  stroke="currentColor"
-                  stroke-width="1.8"
-                  stroke-dasharray="2 2"
-                />
-              </svg>
-            </span>
+        <path
+          d="M9 7V17M15 7V17"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-dasharray="2 2"
+        />
+      </svg>
+    </span>
 
-            <span>Etkinliklerim</span>
-          </a>
+    <span>Etkinliklerim</span>
+  </a>
 
-          <a
-            routerLink="/my-ratings"
-            class="navigation-link"
-          >
-            <span class="navigation-icon">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                aria-hidden="true"
-              >
-                <path
-                  d="M12 3.5L14.6 8.8L20.5 9.7L16.2 13.8L17.2 19.7L12 17L6.8 19.7L7.8 13.8L3.5 9.7L9.4 8.8L12 3.5Z"
-                  stroke="currentColor"
-                  stroke-width="1.8"
-                  stroke-linejoin="round"
-                />
-              </svg>
-            </span>
+  <a
+    routerLink="/my-ratings"
+    class="navigation-link"
+  >
+    <span class="navigation-icon">
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        aria-hidden="true"
+      >
+        <path
+          d="M12 3.5L14.6 8.8L20.5 9.7L16.2 13.8L17.2 19.7L12 17L6.8 19.7L7.8 13.8L3.5 9.7L9.4 8.8L12 3.5Z"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linejoin="round"
+        />
+      </svg>
+    </span>
 
-            <span>Değerlendirmelerim</span>
-          </a>
+    <span>Değerlendirmelerim</span>
+  </a>
 
-          <a
-            routerLink="/events"
-            class="navigation-link"
-          >
-            <span class="navigation-icon">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                aria-hidden="true"
-              >
-                <circle
-                  cx="11"
-                  cy="11"
-                  r="6"
-                  stroke="currentColor"
-                  stroke-width="1.8"
-                />
+  <a
+    routerLink="/cancelled-events"
+    class="navigation-link"
+  >
+    <span class="navigation-icon">
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        aria-hidden="true"
+      >
+        <circle
+          cx="12"
+          cy="12"
+          r="8"
+          stroke="currentColor"
+          stroke-width="1.8"
+        />
 
-                <path
-                  d="M16 16L20 20"
-                  stroke="currentColor"
-                  stroke-width="1.8"
-                  stroke-linecap="round"
-                />
-              </svg>
-            </span>
+        <path
+          d="M9 9L15 15M15 9L9 15"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linecap="round"
+        />
+      </svg>
+    </span>
 
-            <span>Etkinlikleri keşfet</span>
-          </a>
+    <span>İptal Ettiklerim</span>
+  </a>
 
-          <a
-            *ngIf="currentUser.role === 'ADMIN'"
-            routerLink="/admin"
-            class="navigation-link"
-          >
-            <span class="navigation-icon">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                aria-hidden="true"
-              >
-                <rect
-                  x="4"
-                  y="4"
-                  width="6"
-                  height="6"
-                  rx="1"
-                  stroke="currentColor"
-                  stroke-width="1.8"
-                />
+  <a
+    routerLink="/events"
+    class="navigation-link"
+  >
+    <span class="navigation-icon">
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        aria-hidden="true"
+      >
+        <circle
+          cx="11"
+          cy="11"
+          r="6"
+          stroke="currentColor"
+          stroke-width="1.8"
+        />
 
-                <rect
-                  x="14"
-                  y="4"
-                  width="6"
-                  height="6"
-                  rx="1"
-                  stroke="currentColor"
-                  stroke-width="1.8"
-                />
+        <path
+          d="M15.5 15.5L20 20"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linecap="round"
+        />
+      </svg>
+    </span>
 
-                <rect
-                  x="4"
-                  y="14"
-                  width="6"
-                  height="6"
-                  rx="1"
-                  stroke="currentColor"
-                  stroke-width="1.8"
-                />
+    <span>Etkinlikleri keşfet</span>
+  </a>
 
-                <rect
-                  x="14"
-                  y="14"
-                  width="6"
-                  height="6"
-                  rx="1"
-                  stroke="currentColor"
-                  stroke-width="1.8"
-                />
-              </svg>
-            </span>
+  <a
+    *ngIf="currentUser.role === 'ADMIN'"
+    routerLink="/admin"
+    class="navigation-link"
+  >
+    <span class="navigation-icon">
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        aria-hidden="true"
+      >
+        <rect
+          x="4"
+          y="4"
+          width="6"
+          height="6"
+          rx="1"
+          stroke="currentColor"
+          stroke-width="1.8"
+        />
 
-            <span>Admin paneli</span>
-          </a>
+        <rect
+          x="14"
+          y="4"
+          width="6"
+          height="6"
+          rx="1"
+          stroke="currentColor"
+          stroke-width="1.8"
+        />
 
-        </nav>
+        <rect
+          x="4"
+          y="14"
+          width="6"
+          height="6"
+          rx="1"
+          stroke="currentColor"
+          stroke-width="1.8"
+        />
+
+        <rect
+          x="14"
+          y="14"
+          width="6"
+          height="6"
+          rx="1"
+          stroke="currentColor"
+          stroke-width="1.8"
+        />
+      </svg>
+    </span>
+
+    <span>Admin paneli</span>
+  </a>
+
+</nav>
 
         <button
           type="button"
