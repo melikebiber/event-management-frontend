@@ -380,32 +380,36 @@
           </div>
 
           <button
-            type="button"
-            class="register-button"
-            (click)="registerForEvent()"
-            [disabled]="
-              isRegistering ||
-              !selectedTicket ||
-              selectedTicket.available_quantity <= 0 ||
-              event.status !== 'active'
-            "
-          >
-            {{
-              isRegistering
-                ? 'Kayıt oluşturuluyor...'
-                : event.status !== 'active'
-                  ? 'Etkinlik Aktif Değil'
-                  : selectedTicket &&
-                    selectedTicket.available_quantity <= 0
-                    ? 'Kontenjan Doldu'
-                    : 'Etkinliğe Katıl'
-            }}
-          </button>
+  type="button"
+  class="register-button"
+  (click)="registerForEvent()"
+  [disabled]="!canRegister()"
+>
+  {{
+    isPastEvent()
+      ? 'Etkinlik Tamamlandı'
+      : event.status !== 'active'
+        ? 'Kayıtlar Kapalı'
+        : isRegistering
+          ? 'Kayıt oluşturuluyor...'
+          : !selectedTicket
+            ? 'Bilet Seçmelisin'
+            : selectedTicket.available_quantity <= 0
+              ? 'Kontenjan Doldu'
+              : 'Etkinliğe Katıl'
+  }}
+</button>
 
           <p class="secure-message">
             Katılım işlemin seçtiğin bilet türüne göre
             oluşturulur.
           </p>
+          <p
+  *ngIf="isPastEvent()"
+  class="registration-info"
+>
+  Bu etkinliğin tarihi geçtiği için yeni katılım kaydı alınmıyor.
+</p>
 
           <p
             class="registration-message"

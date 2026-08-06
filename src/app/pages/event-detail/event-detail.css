@@ -699,3 +699,19 @@
     grid-template-columns: 1fr;
   }
 }
+.join-button:disabled {
+  border-color: #d6d6da;
+  background: #e5e5e8;
+  color: #929298;
+  box-shadow: none;
+  cursor: not-allowed;
+  opacity: 1;
+}
+
+.registration-info {
+  margin: 14px 0 0;
+  color: #8a8a91;
+  font-size: 13px;
+  line-height: 1.5;
+  text-align: center;
+}

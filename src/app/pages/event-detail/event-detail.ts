@@ -144,6 +144,13 @@ export class EventDetail implements OnInit {
   registerForEvent(): void {
     this.registrationMessage = '';
     this.registrationSuccess = false;
+      if (this.isPastEvent()) {
+    return;
+  }
+
+  if (this.event?.status !== 'active') {
+    return;
+  }
 
     if (!this.event) {
       this.registrationMessage =
@@ -309,6 +316,30 @@ export class EventDetail implements OnInit {
 
     return '/images/events/conference.jpg';
   }
+  isPastEvent(): boolean {
+  if (!this.event?.event_date) {
+    return false;
+  }
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const eventDate = new Date(
+    `${this.event.event_date}T00:00:00`
+  );
+
+  return eventDate < today;
+}
+
+canRegister(): boolean {
+  return (
+    this.event?.status === 'active' &&
+    !this.isPastEvent() &&
+    !!this.selectedTicket &&
+    this.selectedTicket.available_quantity > 0 &&
+    !this.isRegistering
+  );
+}
 
   goBack(): void {
     this.router.navigate(['/events']);

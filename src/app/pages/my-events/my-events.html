@@ -52,7 +52,10 @@
 
     <!-- Boş liste durumu -->
     <div
-      *ngIf="!isLoading && registrations.length === 0"
+      *ngIf="
+        !isLoading &&
+        registrations.length === 0
+      "
       class="state-card empty-state"
     >
       <div class="state-icon">🎟️</div>
@@ -74,29 +77,41 @@
 
     <!-- Etkinlik kayıtları -->
     <div
-      *ngIf="!isLoading && registrations.length > 0"
+      *ngIf="
+        !isLoading &&
+        registrations.length > 0
+      "
       class="registrations-grid"
     >
       <article
         *ngFor="let registration of registrations"
         class="registration-card"
       >
-       <div class="card-image">
-  <img
-    [src]="getEventImage(
-      registration.event?.category?.category_name || '',
-      registration.event?.title || ''
-    )"
-    [alt]="registration.event?.title || 'Etkinlik görseli'"
-  >
+        <div class="card-image">
+          <img
+            [src]="
+              getEventImage(
+                registration.event
+                  ?.category
+                  ?.category_name || '',
+                registration.event?.title || ''
+              )
+            "
+            [alt]="
+              registration.event?.title ||
+              'Etkinlik görseli'
+            "
+          >
 
-  <span class="category-badge">
-    {{
-      registration.event?.category?.category_name
-        || 'Etkinlik'
-    }}
-  </span>
-</div>
+          <span class="category-badge">
+            {{
+              registration.event
+                ?.category
+                ?.category_name ||
+              'Etkinlik'
+            }}
+          </span>
+        </div>
 
         <div class="card-content">
           <div class="card-top-row">
@@ -109,37 +124,47 @@
             </span>
 
             <span
-              *ngIf="registration.ticket?.ticket_type"
+              *ngIf="
+                registration.ticket
+                  ?.ticket_type
+              "
               class="ticket-type"
             >
-              {{ registration.ticket?.ticket_type }}
+              {{
+                registration.ticket
+                  ?.ticket_type
+              }}
             </span>
           </div>
 
           <h2>
             {{
-              registration.event?.title
-                || 'Etkinlik bilgisi bulunamadı'
+              registration.event?.title ||
+              'Etkinlik bilgisi bulunamadı'
             }}
           </h2>
 
           <p class="event-description">
             {{
-              registration.event?.description
-                || 'Bu etkinlik için henüz bir açıklama bulunmuyor.'
+              registration.event?.description ||
+              'Bu etkinlik için henüz bir açıklama bulunmuyor.'
             }}
           </p>
 
           <div class="event-information">
+
             <div class="information-item">
-              <span class="information-icon">📅</span>
+              <span class="information-icon">
+                📅
+              </span>
 
               <div>
                 <small>Tarih</small>
 
                 <strong>
                   {{
-                    registration.event?.event_date
+                    registration.event
+                      ?.event_date
                       | date:'dd.MM.yyyy'
                   }}
                 </strong>
@@ -147,50 +172,80 @@
             </div>
 
             <div class="information-item">
-              <span class="information-icon">🕒</span>
+              <span class="information-icon">
+                🕒
+              </span>
 
               <div>
                 <small>Saat</small>
 
                 <strong>
-                  {{ registration.event?.start_time || 'Belirtilmedi' }}
+                  {{
+                    registration.event
+                      ?.start_time ||
+                    'Belirtilmedi'
+                  }}
                 </strong>
               </div>
             </div>
 
             <div class="information-item">
-              <span class="information-icon">📍</span>
+              <span class="information-icon">
+                📍
+              </span>
 
               <div>
                 <small>Konum</small>
 
                 <strong>
                   {{
-                    registration.event?.location?.location_name
-                      || 'Konum belirtilmedi'
+                    registration.event
+                      ?.location
+                      ?.location_name ||
+                    'Konum belirtilmedi'
                   }}
                 </strong>
 
                 <span
-                  *ngIf="registration.event?.location?.city"
+                  *ngIf="
+                    registration.event
+                      ?.location
+                      ?.city
+                  "
                   class="location-detail"
                 >
-                  {{ registration.event?.location?.city }}
+                  {{
+                    registration.event
+                      ?.location
+                      ?.city
+                  }}
 
                   <ng-container
-                    *ngIf="registration.event?.location?.district"
+                    *ngIf="
+                      registration.event
+                        ?.location
+                        ?.district
+                    "
                   >
                     /
-                    {{ registration.event?.location?.district }}
+                    {{
+                      registration.event
+                        ?.location
+                        ?.district
+                    }}
                   </ng-container>
                 </span>
               </div>
             </div>
+
           </div>
 
           <div class="card-actions">
+
             <a
-              *ngIf="registration.event?.event_id"
+              *ngIf="
+                registration.event?.event_id
+              "
               [routerLink]="[
                 '/events',
                 registration.event?.event_id
@@ -201,16 +256,225 @@
             </a>
 
             <button
+              *ngIf="
+                isPastEvent(registration)
+              "
+              type="button"
+              class="rating-button"
+              (click)="
+                openRatingModal(registration)
+              "
+            >
+              Etkinliği değerlendir
+            </button>
+
+            <button
               type="button"
               class="cancel-button"
-              (click)="cancelRegistration(registration)"
+              (click)="
+                cancelRegistration(
+                  registration
+                )
+              "
             >
               Kaydı iptal et
             </button>
+
           </div>
         </div>
       </article>
     </div>
 
   </div>
+
+  <!-- ETKİNLİK DEĞERLENDİRME MODALI -->
+  <div
+    *ngIf="isRatingModalOpen"
+    class="rating-modal-backdrop"
+    (click)="closeRatingModal()"
+  >
+    <section
+      class="rating-modal"
+      (click)="$event.stopPropagation()"
+    >
+      <div class="rating-modal-header">
+        <div>
+          <span class="rating-label">
+            ETKİNLİK DEĞERLENDİRMESİ
+          </span>
+
+          <h2>
+            {{
+              selectedRegistration
+                ?.event
+                ?.title ||
+              'Etkinliği değerlendir'
+            }}
+          </h2>
+
+          <p>
+            Deneyimini dört farklı başlıkta
+            1 ile 5 yıldız arasında değerlendir.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          class="rating-modal-close"
+          aria-label="Pencereyi kapat"
+          (click)="closeRatingModal()"
+        >
+          ×
+        </button>
+      </div>
+
+      <div class="rating-groups">
+
+        <div class="rating-group">
+          <span>Etkinlik içeriği</span>
+
+          <div class="stars">
+            <button
+              *ngFor="
+                let star of [1, 2, 3, 4, 5]
+              "
+              type="button"
+              [class.active]="
+                star <=
+                ratingForm.content_score
+              "
+              (click)="
+                setRating(
+                  'content_score',
+                  star
+                )
+              "
+            >
+              ★
+            </button>
+          </div>
+        </div>
+
+        <div class="rating-group">
+          <span>Organizasyon</span>
+
+          <div class="stars">
+            <button
+              *ngFor="
+                let star of [1, 2, 3, 4, 5]
+              "
+              type="button"
+              [class.active]="
+                star <=
+                ratingForm
+                  .organization_score
+              "
+              (click)="
+                setRating(
+                  'organization_score',
+                  star
+                )
+              "
+            >
+              ★
+            </button>
+          </div>
+        </div>
+
+        <div class="rating-group">
+          <span>Mekân</span>
+
+          <div class="stars">
+            <button
+              *ngFor="
+                let star of [1, 2, 3, 4, 5]
+              "
+              type="button"
+              [class.active]="
+                star <=
+                ratingForm.location_score
+              "
+              (click)="
+                setRating(
+                  'location_score',
+                  star
+                )
+              "
+            >
+              ★
+            </button>
+          </div>
+        </div>
+
+        <div class="rating-group">
+          <span>Genel memnuniyet</span>
+
+          <div class="stars">
+            <button
+              *ngFor="
+                let star of [1, 2, 3, 4, 5]
+              "
+              type="button"
+              [class.active]="
+                star <=
+                ratingForm
+                  .satisfaction_score
+              "
+              (click)="
+                setRating(
+                  'satisfaction_score',
+                  star
+                )
+              "
+            >
+              ★
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <label class="rating-comment">
+        <span>Yorumunuz</span>
+
+        <textarea
+          rows="4"
+          maxlength="500"
+          [(ngModel)]="
+            ratingForm.comment
+          "
+          placeholder="Etkinlikle ilgili görüşlerinizi yazabilirsiniz."
+        ></textarea>
+      </label>
+
+      <div class="rating-modal-actions">
+
+        <button
+          type="button"
+          class="rating-cancel-button"
+          (click)="closeRatingModal()"
+        >
+          Vazgeç
+        </button>
+
+        <button
+          type="button"
+          class="rating-submit-button"
+          [disabled]="
+            !isRatingFormValid() ||
+            isSubmittingRating
+          "
+          (click)="submitRating()"
+        >
+          {{
+            isSubmittingRating
+              ? 'Gönderiliyor...'
+              : 'Değerlendirmeyi Gönder'
+          }}
+        </button>
+
+      </div>
+    </section>
+  </div>
+
 </section>
