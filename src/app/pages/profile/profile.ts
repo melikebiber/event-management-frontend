@@ -22,6 +22,7 @@ import {
   ChangePasswordRequest,
   UpdateProfileRequest,
   UserProfile,
+  UserRating,
   UserService
 } from '../../services/user';
 
@@ -47,6 +48,10 @@ interface HttpErrorResponse {
 export class Profile implements OnInit {
 
   currentUser: UserProfile | null = null;
+
+myRatings: UserRating[] = [];
+isRatingsLoading = true;
+ratingsErrorMessage = '';
 
   isLoading = true;
   errorMessage = '';
@@ -123,8 +128,9 @@ export class Profile implements OnInit {
   }
 
   ngOnInit(): void {
-    this.loadProfile();
-  }
+  this.loadProfile();
+  this.loadMyRatings();
+}
 
   loadProfile(): void {
     const token = localStorage.getItem('token');
@@ -177,6 +183,45 @@ export class Profile implements OnInit {
         }
       });
   }
+  loadMyRatings(): void {
+  const token = localStorage.getItem('token');
+
+  if (!token) {
+    return;
+  }
+
+  this.isRatingsLoading = true;
+  this.ratingsErrorMessage = '';
+
+  this.userService
+    .getMyRatings()
+    .subscribe({
+      next: (response) => {
+        this.myRatings =
+          response.data ?? [];
+
+        this.isRatingsLoading = false;
+
+        this.changeDetector.detectChanges();
+      },
+
+      error: (error: HttpErrorResponse) => {
+        console.error(
+          'Değerlendirmeler alınamadı:',
+          error
+        );
+
+        this.myRatings = [];
+        this.isRatingsLoading = false;
+
+        this.ratingsErrorMessage =
+          error.error?.message ??
+          'Değerlendirmeler yüklenirken bir hata oluştu.';
+
+        this.changeDetector.detectChanges();
+      }
+    });
+}
 
   openProfileModal(): void {
     if (!this.currentUser) {
@@ -374,6 +419,12 @@ export class Profile implements OnInit {
 
     return 'Kullanıcı';
   }
+  isStarActive(
+  score: number,
+  star: number
+): boolean {
+  return star <= Math.round(score);
+}
 
   logout(): void {
     localStorage.removeItem('token');

@@ -53,5 +53,11 @@ export const routes: Routes = [
   path: 'admin/events/:eventId/edit',
   component: AdminEventForm,
   canActivate: [adminGuard]
+},
+{
+  path: 'my-ratings',
+  loadComponent: () =>
+    import('./pages/my-ratings/my-ratings')
+      .then(m => m.MyRatings)
 }
 ];

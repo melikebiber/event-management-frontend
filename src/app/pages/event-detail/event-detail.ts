@@ -53,6 +53,10 @@ export class EventDetail implements OnInit {
   registrationMessage = '';
   registrationSuccess = false;
 
+  averageScore = 0;
+ratingCount = 0;
+isRatingLoading = false;
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -76,6 +80,7 @@ export class EventDetail implements OnInit {
 
     this.getEventDetail(eventId);
     this.getEventTickets(eventId);
+    this.getRatingSummary(eventId);
   }
 
   getEventDetail(eventId: string): void {
@@ -140,6 +145,38 @@ export class EventDetail implements OnInit {
         }
       });
   }
+  getRatingSummary(eventId: string): void {
+  this.isRatingLoading = true;
+
+  this.eventService
+    .getRatingSummary(Number(eventId))
+    .subscribe({
+      next: (response) => {
+        this.averageScore =
+          Number(response.data?.average_score || 0);
+
+        this.ratingCount =
+          Number(response.data?.rating_count || 0);
+
+        this.isRatingLoading = false;
+
+        this.changeDetector.detectChanges();
+      },
+
+      error: (error) => {
+        console.error(
+          'Etkinlik puanı alınamadı:',
+          error
+        );
+
+        this.averageScore = 0;
+        this.ratingCount = 0;
+        this.isRatingLoading = false;
+
+        this.changeDetector.detectChanges();
+      }
+    });
+}
 
   registerForEvent(): void {
     this.registrationMessage = '';

@@ -28,6 +28,23 @@ export interface ChangePasswordRequest {
   confirmPassword: string;
 }
 
+export interface UserRating {
+  rating_id: number;
+
+  event: {
+    event_id: number;
+    title: string;
+    event_date: string;
+  };
+
+  content_score: number;
+  organization_score: number;
+  location_score: number;
+  satisfaction_score: number;
+  average_score: number;
+  created_at: string;
+}
+
 interface UserProfileResponse {
   success: boolean;
   message?: string;
@@ -43,6 +60,12 @@ interface UpdateProfileResponse {
 interface ChangePasswordResponse {
   success: boolean;
   message: string;
+}
+
+interface UserRatingsResponse {
+  success: boolean;
+  message?: string;
+  data: UserRating[];
 }
 
 @Injectable({
@@ -82,6 +105,15 @@ export class UserService {
     return this.http.put<ChangePasswordResponse>(
       `${this.apiUrl}/change-password`,
       data,
+      {
+        headers: this.getAuthHeaders()
+      }
+    );
+  }
+
+  getMyRatings(): Observable<UserRatingsResponse> {
+    return this.http.get<UserRatingsResponse>(
+      `${this.apiUrl}/my-ratings`,
       {
         headers: this.getAuthHeaders()
       }

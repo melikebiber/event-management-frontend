@@ -113,6 +113,29 @@
       </span>
 
     </div>
+    <div
+  class="event-rating-summary"
+  *ngIf="!isRatingLoading"
+>
+  <ng-container *ngIf="ratingCount > 0; else noRating">
+    <span class="rating-star">★</span>
+
+    <strong>
+      {{ averageScore | number:'1.1-1' }}
+    </strong>
+
+    <span class="rating-count">
+      {{ ratingCount }}
+      değerlendirme
+    </span>
+  </ng-container>
+
+  <ng-template #noRating>
+    <span class="no-rating-text">
+      Henüz değerlendirme yapılmadı
+    </span>
+  </ng-template>
+</div>
 
   </div>
 

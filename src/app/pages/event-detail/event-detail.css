@@ -715,3 +715,38 @@
   line-height: 1.5;
   text-align: center;
 }
+.event-rating-summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  margin-top: 18px;
+  padding: 10px 15px;
+  border: 1px solid #f2c45c;
+  border-radius: 999px;
+  background: #fff8e6;
+}
+
+.rating-star {
+  color: #e7a600;
+  font-size: 21px;
+  line-height: 1;
+}
+
+.event-rating-summary strong {
+  color: #2a2518;
+  font-size: 16px;
+  font-weight: 850;
+}
+
+.rating-count {
+  color: #74683f;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.no-rating-text {
+  color: #74683f;
+  font-size: 12px;
+  font-weight: 700;
+}

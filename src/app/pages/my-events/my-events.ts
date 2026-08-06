@@ -63,8 +63,7 @@ export class MyEvents implements OnInit {
     content_score: 0,
     organization_score: 0,
     location_score: 0,
-    satisfaction_score: 0,
-    comment: ''
+    satisfaction_score: 0
   };
 
   constructor(
@@ -288,8 +287,7 @@ export class MyEvents implements OnInit {
       content_score: 0,
       organization_score: 0,
       location_score: 0,
-      satisfaction_score: 0,
-      comment: ''
+      satisfaction_score: 0
     };
 
     this.errorMessage = '';
@@ -362,12 +360,7 @@ export class MyEvents implements OnInit {
 
           satisfaction_score:
             this.ratingForm
-              .satisfaction_score,
-
-          comment:
-            this.ratingForm
-              .comment
-              .trim()
+              .satisfaction_score
         }
       )
       .subscribe({

@@ -1,0 +1,288 @@
+<section class="ratings-page">
+
+  <div class="ratings-container">
+
+    <div class="ratings-section-heading">
+
+      <div>
+        <span class="section-label">
+          DEĞERLENDİRMELERİM
+        </span>
+
+        <h1>Verdiğim Puanlar</h1>
+
+        <p>
+          Katıldığın etkinliklere verdiğin puanları
+          ve değerlendirme ayrıntılarını görüntüleyebilirsin.
+        </p>
+      </div>
+
+      <div class="heading-actions">
+
+        <a
+          routerLink="/profile"
+          class="profile-back-link"
+        >
+          ← Profilime Dön
+        </a>
+
+        <span class="ratings-count-badge">
+          {{ myRatings.length }} değerlendirme
+        </span>
+
+      </div>
+
+    </div>
+
+    <div
+      class="ratings-loading"
+      *ngIf="isLoading"
+    >
+      Değerlendirmelerin yükleniyor...
+    </div>
+
+    <div
+      class="ratings-error"
+      *ngIf="!isLoading && errorMessage"
+    >
+      {{ errorMessage }}
+    </div>
+
+    <div
+      class="ratings-empty"
+      *ngIf="
+        !isLoading &&
+        !errorMessage &&
+        myRatings.length === 0
+      "
+    >
+      Henüz değerlendirme yapmadın.
+    </div>
+
+    <div
+      class="ratings-list"
+      *ngIf="
+        !isLoading &&
+        !errorMessage &&
+        myRatings.length > 0
+      "
+    >
+
+      <article
+        class="user-rating-card"
+        *ngFor="let rating of myRatings"
+      >
+
+        <div class="rating-card-header">
+
+          <div class="rating-event-info">
+
+            <span class="rating-event-label">
+              ETKİNLİK
+            </span>
+
+            <h2>
+              {{ rating.event.title }}
+            </h2>
+
+            <span class="rating-event-date">
+              📅
+              {{
+                rating.event.event_date
+                  | date:'dd.MM.yyyy'
+              }}
+            </span>
+
+          </div>
+
+          <div class="rating-average-box">
+
+            <div class="average-stars">
+
+              <span
+                *ngFor="let star of [1, 2, 3, 4, 5]"
+                [class.active]="
+                  isStarActive(
+                    rating.average_score,
+                    star
+                  )
+                "
+              >
+                ★
+              </span>
+
+            </div>
+
+            <strong>
+              {{
+                rating.average_score
+                  | number:'1.1-1'
+              }}
+            </strong>
+
+            <small>
+              GENEL PUAN
+            </small>
+
+          </div>
+
+        </div>
+
+        <div class="rating-details-grid">
+
+          <div class="rating-detail-item">
+
+            <span>İçerik</span>
+
+            <div class="detail-score">
+
+              <div class="mini-stars">
+
+                <span
+                  *ngFor="let star of [1, 2, 3, 4, 5]"
+                  [class.active]="
+                    isStarActive(
+                      rating.content_score,
+                      star
+                    )
+                  "
+                >
+                  ★
+                </span>
+
+              </div>
+
+              <strong>
+                {{ rating.content_score }}/5
+              </strong>
+
+            </div>
+
+          </div>
+
+          <div class="rating-detail-item">
+
+            <span>Organizasyon</span>
+
+            <div class="detail-score">
+
+              <div class="mini-stars">
+
+                <span
+                  *ngFor="let star of [1, 2, 3, 4, 5]"
+                  [class.active]="
+                    isStarActive(
+                      rating.organization_score,
+                      star
+                    )
+                  "
+                >
+                  ★
+                </span>
+
+              </div>
+
+              <strong>
+                {{ rating.organization_score }}/5
+              </strong>
+
+            </div>
+
+          </div>
+
+          <div class="rating-detail-item">
+
+            <span>Mekân</span>
+
+            <div class="detail-score">
+
+              <div class="mini-stars">
+
+                <span
+                  *ngFor="let star of [1, 2, 3, 4, 5]"
+                  [class.active]="
+                    isStarActive(
+                      rating.location_score,
+                      star
+                    )
+                  "
+                >
+                  ★
+                </span>
+
+              </div>
+
+              <strong>
+                {{ rating.location_score }}/5
+              </strong>
+
+            </div>
+
+          </div>
+
+          <div class="rating-detail-item">
+
+            <span>Genel Memnuniyet</span>
+
+            <div class="detail-score">
+
+              <div class="mini-stars">
+
+                <span
+                  *ngFor="let star of [1, 2, 3, 4, 5]"
+                  [class.active]="
+                    isStarActive(
+                      rating.satisfaction_score,
+                      star
+                    )
+                  "
+                >
+                  ★
+                </span>
+
+              </div>
+
+              <strong>
+                {{ rating.satisfaction_score }}/5
+              </strong>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="rating-card-footer">
+
+          <div>
+            <span>
+              Değerlendirme tarihi
+            </span>
+
+            <strong>
+              {{
+                rating.created_at
+                  | date:'dd.MM.yyyy'
+              }}
+            </strong>
+          </div>
+
+          <a
+            [routerLink]="[
+              '/events',
+              rating.event.event_id
+            ]"
+          >
+            Etkinliği Görüntüle
+            <span aria-hidden="true">→</span>
+          </a>
+
+        </div>
+
+      </article>
+
+    </div>
+
+  </div>
+
+</section>
