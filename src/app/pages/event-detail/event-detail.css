@@ -750,3 +750,77 @@
   font-size: 12px;
   font-weight: 700;
 }
+.registration-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 4000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(18, 18, 20, 0.62);
+  backdrop-filter: blur(5px);
+}
+
+.registration-modal {
+  width: min(100%, 430px);
+  padding: 34px 30px 28px;
+  border-radius: 20px;
+  background: #ffffff;
+  text-align: center;
+  box-sizing: border-box;
+  box-shadow: 0 25px 70px rgba(20, 20, 24, 0.28);
+}
+
+.registration-modal-icon {
+  display: flex;
+  width: 58px;
+  height: 58px;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 18px;
+  border-radius: 50%;
+  font-size: 28px;
+  font-weight: 900;
+}
+
+.success-modal .registration-modal-icon {
+  background: #ecfdf3;
+  color: #198754;
+}
+
+.error-modal .registration-modal-icon {
+  background: #fff1f2;
+  color: #be123c;
+}
+
+.registration-modal h2 {
+  margin: 0;
+  color: #202024;
+  font-size: 24px;
+  line-height: 1.25;
+}
+
+.registration-modal p {
+  margin: 12px 0 26px;
+  color: #73737a;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.registration-modal-button {
+  width: 100%;
+  min-height: 46px;
+  border: 0;
+  border-radius: 11px;
+  background: #f65858;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.registration-modal-button:hover {
+  background: #e94e4e;
+}

@@ -20,22 +20,6 @@
       </a>
     </header>
 
-    <!-- Başarılı işlem mesajı -->
-    <div
-      *ngIf="successMessage"
-      class="message-box success-message"
-    >
-      {{ successMessage }}
-    </div>
-
-    <!-- Hata mesajı -->
-    <div
-      *ngIf="errorMessage"
-      class="message-box error-message"
-    >
-      {{ errorMessage }}
-    </div>
-
     <!-- Yüklenme durumu -->
     <div
       *ngIf="isLoading"
@@ -269,16 +253,17 @@
             </button>
 
             <button
-              type="button"
-              class="cancel-button"
-              (click)="
-                cancelRegistration(
-                  registration
-                )
-              "
-            >
-              Kaydı iptal et
-            </button>
+  *ngIf="!isPastEvent(registration)"
+  type="button"
+  class="cancel-button"
+  (click)="
+    openCancelConfirmModal(
+      registration
+    )
+  "
+>
+  Kaydı iptal et
+</button>
 
           </div>
         </div>
@@ -463,5 +448,103 @@
       </div>
     </section>
   </div>
+  <!-- KAYIT İPTAL ONAY MODALI -->
+<div
+  *ngIf="isCancelConfirmModalOpen"
+  class="cancel-modal-backdrop"
+  (click)="closeCancelConfirmModal()"
+>
+  <section
+    class="cancel-confirm-modal"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="cancel-modal-icon warning-icon">
+      !
+    </div>
+
+    <h2>Kaydı iptal etmek istiyor musunuz?</h2>
+
+    <p>
+      <strong>
+        {{
+          registrationToCancel
+            ?.event
+            ?.title ||
+          'Bu etkinlik'
+        }}
+      </strong>
+
+      için oluşturduğunuz katılım kaydı
+      iptal edilecektir.
+    </p>
+
+    <div class="cancel-modal-actions">
+
+      <button
+        type="button"
+        class="cancel-modal-back-button"
+        [disabled]="isCancellingRegistration"
+        (click)="closeCancelConfirmModal()"
+      >
+        Vazgeç
+      </button>
+
+      <button
+        type="button"
+        class="cancel-modal-confirm-button"
+        [disabled]="isCancellingRegistration"
+        (click)="confirmCancellation()"
+      >
+        {{
+          isCancellingRegistration
+            ? 'İptal ediliyor...'
+            : 'Kaydı İptal Et'
+        }}
+      </button>
+
+    </div>
+  </section>
+</div>
+<!-- KAYIT İPTAL SONUÇ MODALI -->
+<div
+  *ngIf="isCancelResultModalOpen"
+  class="cancel-modal-backdrop"
+  (click)="closeCancelResultModal()"
+>
+  <section
+    class="cancel-result-modal"
+    [class.success-result]="cancelResultSuccess"
+    [class.error-result]="!cancelResultSuccess"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="cancel-modal-icon">
+      {{ cancelResultSuccess ? '✓' : '!' }}
+    </div>
+
+    <h2>
+      {{
+        cancelResultSuccess
+          ? 'Kayıt iptal edildi'
+          : 'İşlem tamamlanamadı'
+      }}
+    </h2>
+
+    <p>
+      {{
+        cancelResultSuccess
+          ? successMessage
+          : errorMessage
+      }}
+    </p>
+
+    <button
+      type="button"
+      class="cancel-result-button"
+      (click)="closeCancelResultModal()"
+    >
+      Tamam
+    </button>
+  </section>
+</div>
 
 </section>

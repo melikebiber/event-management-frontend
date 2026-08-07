@@ -59,6 +59,7 @@ ratingsErrorMessage = '';
 
   isProfileModalOpen = false;
   isPasswordModalOpen = false;
+  isLogoutModalOpen = false;
 
   isSavingProfile = false;
   isChangingPassword = false;
@@ -171,13 +172,13 @@ ratingsErrorMessage = '';
             error.error?.message ??
             'Profil bilgileri yüklenirken bir hata oluştu.';
 
-          if (
-            error.status === 401 ||
-            error.status === 403
-          ) {
-            this.logout();
-            return;
-          }
+         if (
+  error.status === 401 ||
+  error.status === 403
+) {
+  this.performLogout();
+  return;
+}
 
           this.changeDetector.detectChanges();
         }
@@ -425,11 +426,25 @@ ratingsErrorMessage = '';
 ): boolean {
   return star <= Math.round(score);
 }
+openLogoutModal(): void {
+  this.isLogoutModalOpen = true;
+  this.changeDetector.detectChanges();
+}
 
-  logout(): void {
-    localStorage.removeItem('token');
-    localStorage.removeItem('currentUser');
+closeLogoutModal(): void {
+  this.isLogoutModalOpen = false;
+  this.changeDetector.detectChanges();
+}
 
-    this.router.navigate(['/login']);
-  }
+confirmLogout(): void {
+  this.isLogoutModalOpen = false;
+  this.performLogout();
+}
+
+private performLogout(): void {
+  localStorage.removeItem('token');
+  localStorage.removeItem('currentUser');
+
+  this.router.navigate(['/login']);
+}
 }

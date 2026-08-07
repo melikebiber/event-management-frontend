@@ -56,6 +56,15 @@ export class MyEvents implements OnInit {
   isRatingModalOpen = false;
   isSubmittingRating = false;
 
+  isCancelConfirmModalOpen = false;
+  isCancelResultModalOpen = false;
+  isCancellingRegistration = false;
+
+cancelResultSuccess = false;
+
+registrationToCancel:
+  Registration | null = null;
+
   selectedRegistration:
     Registration | null = null;
 
@@ -206,57 +215,101 @@ export class MyEvents implements OnInit {
     return '/images/events/conference.jpg';
   }
 
-  cancelRegistration(
-    registration: Registration
-  ): void {
-    const confirmation =
-      window.confirm(
-        'Bu etkinlik için katılım kaydını iptal etmek istediğine emin misin?'
-      );
+  openCancelConfirmModal(
+  registration: Registration
+): void {
+  this.registrationToCancel =
+    registration;
 
-    if (!confirmation) {
-      return;
-    }
+  this.errorMessage = '';
+  this.successMessage = '';
 
-    this.errorMessage = '';
-    this.successMessage = '';
+  this.isCancelConfirmModalOpen = true;
 
-    this.registrationService
-      .cancelRegistration(
-        registration.registration_id
-      )
-      .subscribe({
-        next: (response) => {
-          this.successMessage =
-            response.message ??
-            'Etkinlik kaydın başarıyla iptal edildi.';
+  this.changeDetector.detectChanges();
+}
 
-          this.registrations =
-            this.registrations.filter(
-              item =>
-                item.registration_id !==
-                registration.registration_id
-            );
+closeCancelConfirmModal(): void {
+  if (this.isCancellingRegistration) {
+    return;
+  }
 
-          this.changeDetector
-            .detectChanges();
-        },
+  this.isCancelConfirmModalOpen = false;
+  this.registrationToCancel = null;
 
-        error: (error) => {
-          console.error(
-            'Kayıt iptal edilemedi:',
-            error
+  this.changeDetector.detectChanges();
+}
+
+confirmCancellation(): void {
+  if (!this.registrationToCancel) {
+    return;
+  }
+
+  const registration =
+    this.registrationToCancel;
+
+  this.isCancellingRegistration = true;
+  this.errorMessage = '';
+  this.successMessage = '';
+
+  this.registrationService
+    .cancelRegistration(
+      registration.registration_id
+    )
+    .subscribe({
+      next: (response) => {
+        this.isCancellingRegistration = false;
+        this.isCancelConfirmModalOpen = false;
+
+        this.cancelResultSuccess = true;
+
+        this.successMessage =
+          response.message ??
+          'Etkinlik kaydınız başarıyla iptal edildi.';
+
+        this.registrations =
+          this.registrations.filter(
+            item =>
+              item.registration_id !==
+              registration.registration_id
           );
 
-          this.errorMessage =
-            error.error?.message ??
-            'Kayıt iptal edilirken bir hata oluştu.';
+        this.registrationToCancel = null;
+        this.isCancelResultModalOpen = true;
 
-          this.changeDetector
-            .detectChanges();
-        }
-      });
-  }
+        this.changeDetector.detectChanges();
+      },
+
+      error: (error) => {
+        console.error(
+          'Kayıt iptal edilemedi:',
+          error
+        );
+
+        this.isCancellingRegistration = false;
+        this.isCancelConfirmModalOpen = false;
+
+        this.cancelResultSuccess = false;
+
+        this.errorMessage =
+          error.error?.message ??
+          'Kayıt iptal edilirken bir hata oluştu.';
+
+        this.registrationToCancel = null;
+        this.isCancelResultModalOpen = true;
+
+        this.changeDetector.detectChanges();
+      }
+    });
+}
+
+closeCancelResultModal(): void {
+  this.isCancelResultModalOpen = false;
+  this.successMessage = '';
+  this.errorMessage = '';
+
+  this.changeDetector.detectChanges();
+}
 
   isPastEvent(
     registration: Registration

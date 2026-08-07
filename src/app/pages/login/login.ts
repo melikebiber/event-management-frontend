@@ -1,4 +1,7 @@
-import { Component } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component
+} from '@angular/core';
 
 import {
   FormControl,
@@ -28,6 +31,7 @@ export class Login {
 
   loginMessage = '';
   isLoading = false;
+  isErrorModalOpen = false;
 
   loginForm = new FormGroup({
     email: new FormControl('', {
@@ -48,8 +52,9 @@ export class Login {
   });
 
   constructor(
-    private authService: Auth, //login isteğini backende göndermek için kullanılır.
-    private router: Router
+    private authService: Auth,
+    private router: Router,
+    private changeDetector: ChangeDetectorRef
   ) {}
 
   onSubmit(): void {
@@ -59,15 +64,11 @@ export class Login {
     }
 
     this.isLoading = true;
-    this.loginMessage = ''; //daha önce ekranda kalan mesaj temizlenir
+    this.loginMessage = '';
+    this.isErrorModalOpen = false;
 
     const loginData =
       this.loginForm.getRawValue();
-
-    console.log(
-      'Form bilgileri:',
-      loginData
-    );
 
     this.authService
       .login(loginData)
@@ -75,14 +76,38 @@ export class Login {
         next: (response) => {
           this.isLoading = false;
 
-          console.log(
-            'Backend cevabı:',
-            response
-          );
+          if (
+            response.success === false ||
+            !response.token ||
+            !response.user
+          ) {
+            localStorage.removeItem('token');
+            localStorage.removeItem('currentUser');
 
-          if (!response.token) {
             this.loginMessage =
-              'Giriş başarılı ancak token alınamadı.';
+              response.message ??
+              'E-posta veya şifre hatalı.';
+
+            this.isErrorModalOpen = true;
+            this.changeDetector.detectChanges();
+
+            return;
+          }
+
+          const userId =
+            response.user.user_id ??
+            response.user.id;
+
+          if (!userId) {
+            localStorage.removeItem('token');
+            localStorage.removeItem('currentUser');
+
+            this.loginMessage =
+              'Kullanıcı bilgileri alınamadı.';
+
+            this.isErrorModalOpen = true;
+            this.changeDetector.detectChanges();
+
             return;
           }
 
@@ -91,41 +116,17 @@ export class Login {
             response.token
           );
 
-          if (response.user) {
-            const userId =
-              response.user.user_id ?? //önce user_id değerini kullan yoksa id değerini kullan
-              response.user.id;
-
-            if (!userId) {
-              this.loginMessage =
-                'Kullanıcı ID bilgisi alınamadı.';
-
-              localStorage.removeItem('token');
-              return;
-            }
-
-            localStorage.setItem(
-              'currentUser',
-              JSON.stringify({
-                id: userId,
-                name: response.user.name,
-                surname: response.user.surname,
-                email: response.user.email,
-                phone: response.user.phone,
-                role: response.user.role
-              })
-            );
-          } else {
-            this.loginMessage =
-              'Kullanıcı bilgileri alınamadı.';
-
-            localStorage.removeItem('token');
-            return;
-          }
-
-          this.loginMessage =
-            response.message ??
-            'Giriş işlemi başarılı.';
+          localStorage.setItem(
+            'currentUser',
+            JSON.stringify({
+              id: userId,
+              name: response.user.name,
+              surname: response.user.surname,
+              email: response.user.email,
+              phone: response.user.phone,
+              role: response.user.role
+            })
+          );
 
           this.router.navigate(['/events']);
         },
@@ -133,10 +134,27 @@ export class Login {
         error: (error) => {
           this.isLoading = false;
 
-          this.loginMessage =
-            error.error?.message ??
-            error.error?.error ??
-            'Giriş işlemi başarısız.';
+          localStorage.removeItem('token');
+          localStorage.removeItem('currentUser');
+
+          if (error.status === 401) {
+            this.loginMessage =
+              'E-posta veya şifre hatalı.';
+          } else if (error.status === 404) {
+            this.loginMessage =
+              'Bu e-posta adresiyle kayıtlı kullanıcı bulunamadı.';
+          } else if (error.status === 0) {
+            this.loginMessage =
+              'Sunucuya bağlanılamadı. Lütfen daha sonra tekrar deneyin.';
+          } else {
+            this.loginMessage =
+              error.error?.message ??
+              error.error?.error ??
+              'Giriş işlemi gerçekleştirilemedi.';
+          }
+
+          this.isErrorModalOpen = true;
+          this.changeDetector.detectChanges();
 
           console.error(
             'Giriş hatası:',
@@ -144,5 +162,10 @@ export class Login {
           );
         }
       });
+  }
+
+  closeErrorModal(): void {
+    this.isErrorModalOpen = false;
+    this.changeDetector.detectChanges();
   }
 }

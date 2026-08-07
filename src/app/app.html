@@ -44,13 +44,13 @@
     Admin
   </a>
 }
-        <button
-          type="button"
-          class="logout-button"
-          (click)="logout()"
-        >
-          Çıkış Yap
-        </button>
+       <button
+  type="button"
+  class="logout-button"
+  (click)="openLogoutModal()"
+>
+  Çıkış Yap
+</button>
 
       } @else {
 
@@ -81,3 +81,43 @@
 <main class="page-content">
   <router-outlet></router-outlet>
 </main>
+@if (isLogoutModalOpen) {
+  <div
+    class="logout-modal-backdrop"
+    (click)="closeLogoutModal()"
+  >
+    <section
+      class="logout-modal"
+      (click)="$event.stopPropagation()"
+    >
+      <div class="logout-modal-icon">
+        ↪
+      </div>
+
+      <h2>Çıkış yapmak istiyor musunuz?</h2>
+
+      <p>
+        Hesabınızdan çıkış yapacaksınız.
+        Devam etmek istediğinize emin misiniz?
+      </p>
+
+      <div class="logout-modal-actions">
+        <button
+          type="button"
+          class="logout-cancel-button"
+          (click)="closeLogoutModal()"
+        >
+          Vazgeç
+        </button>
+
+        <button
+          type="button"
+          class="logout-confirm-button"
+          (click)="confirmLogout()"
+        >
+          Çıkış Yap
+        </button>
+      </div>
+    </section>
+  </div>
+}

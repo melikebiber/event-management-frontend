@@ -434,14 +434,7 @@
   Bu etkinliğin tarihi geçtiği için yeni katılım kaydı alınmıyor.
 </p>
 
-          <p
-            class="registration-message"
-            *ngIf="registrationMessage"
-            [class.success]="registrationSuccess"
-            [class.error]="!registrationSuccess"
-          >
-            {{ registrationMessage }}
-          </p>
+      
 
         </section>
 
@@ -450,5 +443,41 @@
     </div>
 
   </div>
+  <div
+  class="registration-modal-backdrop"
+  *ngIf="isRegistrationModalOpen"
+  (click)="closeRegistrationModal()"
+>
+  <section
+    class="registration-modal"
+    [class.success-modal]="registrationSuccess"
+    [class.error-modal]="!registrationSuccess"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="registration-modal-icon">
+      {{ registrationSuccess ? '✓' : '!' }}
+    </div>
+
+    <h2>
+      {{
+        registrationSuccess
+          ? 'Kayıt başarılı'
+          : 'İşlem tamamlanamadı'
+      }}
+    </h2>
+
+    <p>
+      {{ registrationMessage }}
+    </p>
+
+    <button
+      type="button"
+      class="registration-modal-button"
+      (click)="closeRegistrationModal()"
+    >
+      Tamam
+    </button>
+  </section>
+</div>
 
 </section>

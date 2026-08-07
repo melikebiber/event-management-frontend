@@ -370,7 +370,7 @@
         <button
           type="button"
           class="logout-button"
-          (click)="logout()"
+           (click)="openLogoutModal()"
         >
           <span class="navigation-icon">
             <svg
@@ -865,4 +865,43 @@
   </section>
 </div>
   </div>
+  <div
+  class="logout-modal-backdrop"
+  *ngIf="isLogoutModalOpen"
+  (click)="closeLogoutModal()"
+>
+  <section
+    class="logout-modal"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="logout-modal-icon">
+      ↪
+    </div>
+
+    <h2>Çıkış yapmak istiyor musunuz?</h2>
+
+    <p>
+      Hesabınızdan çıkış yapacaksınız.
+      Devam etmek istediğinize emin misiniz?
+    </p>
+
+    <div class="logout-modal-actions">
+      <button
+        type="button"
+        class="logout-cancel-button"
+        (click)="closeLogoutModal()"
+      >
+        Vazgeç
+      </button>
+
+      <button
+        type="button"
+        class="logout-confirm-button"
+        (click)="confirmLogout()"
+      >
+        Çıkış Yap
+      </button>
+    </div>
+  </section>
+</div>
 </section>

@@ -186,11 +186,6 @@
             }
           </button>
 
-          @if (loginMessage) {
-            <p class="login-message">
-              {{ loginMessage }}
-            </p>
-          }
 
         </form>
 
@@ -213,5 +208,34 @@
     </div>
 
   </div>
+  @if (isErrorModalOpen) {
+  <div
+    class="login-modal-backdrop"
+    (click)="closeErrorModal()"
+  >
+    <section
+      class="login-modal"
+      (click)="$event.stopPropagation()"
+    >
+      <div class="modal-error-icon">
+        !
+      </div>
+
+      <h2>Giriş yapılamadı</h2>
+
+      <p>
+        {{ loginMessage }}
+      </p>
+
+      <button
+        type="button"
+        class="modal-confirm-button"
+        (click)="closeErrorModal()"
+      >
+        Tamam
+      </button>
+    </section>
+  </div>
+}
 
 </section>

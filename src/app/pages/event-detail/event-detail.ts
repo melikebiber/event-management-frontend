@@ -52,6 +52,7 @@ export class EventDetail implements OnInit {
 
   registrationMessage = '';
   registrationSuccess = false;
+  isRegistrationModalOpen = false;
 
   averageScore = 0;
 ratingCount = 0;
@@ -178,9 +179,10 @@ isRatingLoading = false;
     });
 }
 
-  registerForEvent(): void {
-    this.registrationMessage = '';
-    this.registrationSuccess = false;
+registerForEvent(): void {
+  this.registrationMessage = '';
+  this.registrationSuccess = false;
+  this.isRegistrationModalOpen = false;
       if (this.isPastEvent()) {
     return;
   }
@@ -190,27 +192,38 @@ isRatingLoading = false;
   }
 
     if (!this.event) {
-      this.registrationMessage =
-        'Etkinlik bilgisi bulunamadı.';
+  this.registrationMessage =
+    'Etkinlik bilgisi bulunamadı.';
 
-      return;
-    }
+  this.registrationSuccess = false;
+  this.isRegistrationModalOpen = true;
+  this.changeDetector.detectChanges();
 
-    if (!this.selectedTicket) {
-      this.registrationMessage =
-        'Bu etkinlik için uygun bilet bulunamadı.';
+  return;
+}
+if (!this.selectedTicket) {
+  this.registrationMessage =
+    'Bu etkinlik için uygun bilet bulunamadı.';
 
-      return;
-    }
+  this.registrationSuccess = false;
+  this.isRegistrationModalOpen = true;
+  this.changeDetector.detectChanges();
 
-    if (
-      this.selectedTicket.available_quantity <= 0
-    ) {
-      this.registrationMessage =
-        'Bu etkinlikte boş kontenjan kalmadı.';
+  return;
+}
 
-      return;
-    }
+   if (
+  this.selectedTicket.available_quantity <= 0
+) {
+  this.registrationMessage =
+    'Bu etkinlikte boş kontenjan kalmadı.';
+
+  this.registrationSuccess = false;
+  this.isRegistrationModalOpen = true;
+  this.changeDetector.detectChanges();
+
+  return;
+}
 
     const currentUserText =
       localStorage.getItem('currentUser');
@@ -230,18 +243,26 @@ isRatingLoading = false;
         currentUserText
       ) as CurrentUser;
     } catch {
-      this.registrationMessage =
-        'Kullanıcı bilgisi okunamadı. Yeniden giriş yap.';
+  this.registrationMessage =
+    'Kullanıcı bilgisi okunamadı. Yeniden giriş yap.';
 
-      return;
-    }
+  this.registrationSuccess = false;
+  this.isRegistrationModalOpen = true;
+  this.changeDetector.detectChanges();
 
-    if (!currentUser.id) {
-      this.registrationMessage =
-        'Kullanıcı ID bilgisi bulunamadı.';
+  return;
+}
 
-      return;
-    }
+  if (!currentUser.id) {
+  this.registrationMessage =
+    'Kullanıcı ID bilgisi bulunamadı.';
+
+  this.registrationSuccess = false;
+  this.isRegistrationModalOpen = true;
+  this.changeDetector.detectChanges();
+
+  return;
+}
 
     this.isRegistering = true;
 
@@ -269,6 +290,8 @@ isRatingLoading = false;
             response.message ??
             'Etkinlik kaydı başarıyla oluşturuldu.';
 
+            this.isRegistrationModalOpen = true;
+
           if (
             response.remaining_ticket_quantity !==
             undefined
@@ -288,6 +311,7 @@ isRatingLoading = false;
             error.error?.message ??
             error.error?.error ??
             'Etkinlik kaydı oluşturulamadı.';
+            this.isRegistrationModalOpen = true;
 
           console.error(
             'Etkinlik kayıt hatası:',
@@ -376,6 +400,10 @@ canRegister(): boolean {
     this.selectedTicket.available_quantity > 0 &&
     !this.isRegistering
   );
+}
+  closeRegistrationModal(): void {
+  this.isRegistrationModalOpen = false;
+  this.changeDetector.detectChanges();
 }
 
   goBack(): void {
