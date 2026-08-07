@@ -239,18 +239,29 @@
               Detayları görüntüle
             </a>
 
-            <button
-              *ngIf="
-                isPastEvent(registration)
-              "
-              type="button"
-              class="rating-button"
-              (click)="
-                openRatingModal(registration)
-              "
-            >
-              Etkinliği değerlendir
-            </button>
+           <button
+  *ngIf="
+    isPastEvent(registration) &&
+    !hasRatedEvent(registration)
+  "
+  type="button"
+  class="rating-button"
+  (click)="
+    openRatingModal(registration)
+  "
+>
+  Etkinliği değerlendir
+</button>
+
+<span
+  *ngIf="
+    isPastEvent(registration) &&
+    hasRatedEvent(registration)
+  "
+  class="rated-badge"
+>
+  ✓ Değerlendirildi
+</span>
 
             <button
   *ngIf="!isPastEvent(registration)"

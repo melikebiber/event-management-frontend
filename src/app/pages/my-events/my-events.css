@@ -763,3 +763,16 @@
     grid-template-columns: 1fr;
   }
 }
+.rated-badge {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 14px;
+  border: 1px solid #b8e5cd;
+  border-radius: 10px;
+  background: #eefaf4;
+  color: #25734a;
+  font-size: 12px;
+  font-weight: 800;
+}

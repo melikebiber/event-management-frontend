@@ -19,6 +19,9 @@ import {
 import {
   EventService
 } from '../../services/event';
+import {
+  UserService
+} from '../../services/user';
 
 interface CurrentUser {
   id: number;
@@ -46,6 +49,7 @@ type RatingField =
 export class MyEvents implements OnInit {
 
   registrations: Registration[] = [];
+  ratedEventIds = new Set<number>();
 
   isLoading = true;
   errorMessage = '';
@@ -74,20 +78,22 @@ registrationToCancel:
     location_score: 0,
     satisfaction_score: 0
   };
+constructor(
+  private registrationService:
+    RegistrationService,
 
-  constructor(
-    private registrationService:
-      RegistrationService,
+  private eventService:
+    EventService,
 
-    private eventService:
-      EventService,
+  private userService:
+    UserService,
 
-    private router:
-      Router,
+  private router:
+    Router,
 
-    private changeDetector:
-      ChangeDetectorRef
-  ) {}
+  private changeDetector:
+    ChangeDetectorRef
+) {}
 
   ngOnInit(): void {
     this.loadCurrentUser();
@@ -107,6 +113,7 @@ registrationToCancel:
         JSON.parse(storedUser) as CurrentUser;
 
       this.getMyRegistrations();
+      this.getMyRatings();
     } catch (error) {
       console.error(
         'Kullanıcı bilgisi okunamadı:',
@@ -159,6 +166,37 @@ registrationToCancel:
         }
       });
   }
+  getMyRatings(): void {
+  this.userService
+    .getMyRatings()
+    .subscribe({
+      next: (response) => {
+        this.ratedEventIds.clear();
+
+        for (const rating of response.data ?? []) {
+          const eventId =
+            rating.event?.event_id;
+
+          if (eventId) {
+            this.ratedEventIds.add(eventId);
+          }
+        }
+
+        this.changeDetector.detectChanges();
+      },
+
+      error: (error) => {
+        console.error(
+          'Değerlendirmeler alınamadı:',
+          error
+        );
+
+        this.ratedEventIds.clear();
+
+        this.changeDetector.detectChanges();
+      }
+    });
+}
 
   getEventImage(
     categoryName: string,
@@ -329,6 +367,18 @@ closeCancelResultModal(): void {
 
     return eventDateValue < today;
   }
+  hasRatedEvent(
+  registration: Registration
+): boolean {
+  const eventId =
+    registration.event?.event_id;
+
+  if (!eventId) {
+    return false;
+  }
+
+  return this.ratedEventIds.has(eventId);
+}
 
   openRatingModal(
     registration: Registration
@@ -419,6 +469,7 @@ closeCancelResultModal(): void {
       .subscribe({
         next: (response) => {
           this.isSubmittingRating = false;
+          this.ratedEventIds.add(eventId);
           this.isRatingModalOpen = false;
           this.selectedRegistration = null;
 
